@@ -21,11 +21,14 @@ set(navigator_source navigator/Network.cpp)
 # read_tally_source
 set(read_tally_source read_tally/read_tally.cpp)
 
+# alara source
+set(alara_source alara/alara.cpp)
+
 # executable
-add_executable( otis main.cpp ${navigator_source} ${read_tally_source} )
+add_executable( otis main.cpp ${navigator_source} ${read_tally_source} ${alara_source} )
 
 # target include dirs
-include_directories(otis navigator read_tally ${CMAKE_CURRENT_SOURCE_DIR} ${igeom_include_dirs})
+include_directories(otis navigator read_tally alara ${CMAKE_CURRENT_SOURCE_DIR} ${igeom_include_dirs})
 
 # cgm libs
 set(igeom_libs ${igeom_lib_dirs}/libiGeom.so ${igeom_lib_dirs}/libcgm.so)
@@ -35,5 +38,7 @@ set(cubit_libs ${cubit_lib_dirs}/libcubiti19.so ${cubit_lib_dirs}/libcubit_geom.
 target_link_libraries(otis ${igeom_libs} ${cubit_libs})
 
 # install the executable
-set( install_bin_dir bin cache path "Installation directory for executables" )
+#install(target otis runtime destination ${INSTALL_BIN_DIR})
+#install(program otis destination bin)
+
 

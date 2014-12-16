@@ -7,6 +7,9 @@
 #include <map>
 #include <set>
 
+#include "read_tally.hpp"
+#include "alara.hpp"
+
 // global vars that are needed
 std::map<int, std::vector<int> > routes;
 int route_counter = 0;
@@ -50,15 +53,8 @@ void DepthFirst( Network* network,
 	  
 	  int hops = (int) visited.size();
 
-	  /*
-	  for ( int i = 0; i < hops; i++ )
-	    {
-	      std::cout << visited[ i ] << " ";
-	    }
-	  */
 	  routes[route_counter]=visited;
 	  route_counter++;
-	  //	  std::cout << std::endl;
 	  
 	  int n = (int) visited.size() - 1;
 	  visited.erase( visited.begin() + n );
@@ -306,7 +302,6 @@ int main(int argc, char* argv[])
   problem_map = init_problem(filename);
 
   nw.SetBiDirection( true );
-
   // build the network
   for ( it = problem_map.begin() ; it != problem_map.end() ; ++it)
     {
@@ -317,13 +312,8 @@ int main(int argc, char* argv[])
     }
   
   // set the targets
-  /*
-  int start  = 3;
-  int target = 18;
-  */
-  int start  = 2;
-  int target = 130;
-
+  int start  = std::atoi(argv[2]);
+  int target = std::atoi(argv[3]);
 
 
   std::vector<int> visited;
@@ -331,9 +321,25 @@ int main(int argc, char* argv[])
   std::cout << "Performing search..." << std::endl;
   DepthFirst( &nw, visited, target );
 
+  if (route_counter == 0 )
+    {
+      std::cout << "No routes were found, check network connectivity" << std::endl;
+      return 0;
+    }
+
+  std::string mcnp_output(argv[4]);
+  // reading tallies from file
+  std::map<int,tally_struct> tallies = read_tallies(mcnp_output);
+
+  // prints a dot graph of network connectivity & 
+  // the unique routes
   print_routes(problem_map);
 
+  // prints the cubit journal file for easy visualisation
   print_cubit_journal("cubit.jou");
+
+  // prints the alara irradiation history
+  print_alara("alara_irr",tallies,problem_map);
   
   return 0;
 }

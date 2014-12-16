@@ -7,7 +7,7 @@
 
 #include "read_tally.hpp"
 
-void read_tallies(std::string filename, int vol_query)
+std::map<int,tally_struct> read_tallies(std::string filename)
 {
   std::ifstream data(filename.c_str());
 
@@ -87,10 +87,9 @@ void read_tallies(std::string filename, int vol_query)
       std::cout << it->first << std::endl;
     }
   */
-  print_tally(tallies,vol_query);
+  //  print_tally(tallies,vol_query);
 
-
-  return;
+  return tallies;
 }
 
 // for a given tally prints out complete description

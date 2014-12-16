@@ -1,4 +1,6 @@
 
+#ifndef READ_TALLY_HPP
+#define READ_TALLY_HPP
 struct tally_struct {
   int entity_number;
   double entity_size;
@@ -13,11 +15,13 @@ struct flux_result {
   double error;
 };
 
+#endif
+
 // print a specific tally from the map
 void print_tally(std::map<int,tally_struct> tallies, int tally_id);
 
 // read the tallies from the file filename
-void read_tallies(std::string filename, int vol_query);
+std::map<int,tally_struct> read_tallies(std::string filename);
 
 // read an atomic tally
 std::vector<flux_result> read_tally_atomic(std::ifstream &data, int &vol_id);
