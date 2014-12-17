@@ -32,7 +32,11 @@ include_directories(otis navigator read_tally alara ${CMAKE_CURRENT_SOURCE_DIR} 
 
 # cgm libs
 set(igeom_libs ${igeom_lib_dirs}/libiGeom.so ${igeom_lib_dirs}/libcgm.so)
-set(cubit_libs ${cubit_lib_dirs}/libcubiti19.so ${cubit_lib_dirs}/libcubit_geom.so ${cubit_lib_dirs}/libcubit_util.so) 
+IF(${CUBIT_VERSION} GREATER 12)
+  set(cubit_libs ${cubit_lib_dirs}/libcubiti19.so ${cubit_lib_dirs}/libcubit_geom.so ${cubit_lib_dirs}/libcubit_util.so) 
+ELSE(${CUBIT_VERSION} GREATER 12)
+  set(cubit_libs ${cubit_lib_dirs}/libcubiti19.so) 
+ENDIF(${CUBIT_VERSION} GREATER 12 )
 
 #libs
 target_link_libraries(otis ${igeom_libs} ${cubit_libs})
