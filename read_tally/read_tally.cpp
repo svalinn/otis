@@ -93,15 +93,15 @@ std::map<int,tally_struct> read_tallies(std::string filename)
 }
 
 // for a given tally prints out complete description
-void print_tally(std::map<int,tally_struct> tallies, int tally_id)
+void print_tally(std::map<int,tally_struct> tallies, int tally_id, std::ostream &ostream)
 {
   tally_struct tally;
   tally = tallies[tally_id];
   
-  std::cout << "#tally " << tally_id << std::endl;
-  for ( int i = 0 ; i < tally.ebins.size() ; i++ )
+  ostream << "#tally " << tally_id << std::endl;
+  for ( int i = tally.ebins.size() ; i != 0 ; --i )
     {
-      std::cout << tally.ebins[i] << " " << tally.result[i] << " " << tally.error[i] << std::endl;
+      ostream << tally.ebins[i] << " " << tally.result[i] << " " << tally.error[i] << std::endl;
     }
   return;
 }

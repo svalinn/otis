@@ -18,7 +18,7 @@ struct flux_result {
 #endif
 
 // print a specific tally from the map
-void print_tally(std::map<int,tally_struct> tallies, int tally_id);
+void print_tally(std::map<int,tally_struct> tallies, int tally_id, std::ostream &ostream);
 
 // read the tallies from the file filename
 std::map<int,tally_struct> read_tallies(std::string filename);
