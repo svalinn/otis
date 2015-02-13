@@ -90,6 +90,7 @@ int vol_id(iBase_EntityHandle eh, iGeom_Instance igeom)
 {
   iBase_TagHandle global_id_tag;
   std::string tag_name("GLOBAL_ID");
+  //  std::string tag_name("VOLUME_ID");
   int err = 0;
   int id;
   // get the tag handle
@@ -406,15 +407,19 @@ int main(int argc, char* argv[])
   std::cout << "Performing search..." << std::endl;
   DepthFirst( &nw, visited, target_vol );
 
+  // prints a dot graph of network connectivity & 
+  // the unique routes
+  print_routes(problem_map);
+  
   if (route_counter == 0 )
     {
       std::cout << "No routes were found, check network connectivity" << std::endl;
       return 0;
     }
-
-  // prints a dot graph of network connectivity & 
-  // the unique routes
-  print_routes(problem_map);
+  
+  std::string mcnp_output(argv[4]);
+  // reading tallies from file
+  std::map<int,tally_struct> tallies = read_tallies(mcnp_output);
 
   // prints the cubit journal file for easy visualisation
   print_cubit_journal("cubit.jou");
@@ -426,7 +431,7 @@ int main(int argc, char* argv[])
   std::map<int,tally_struct> tallies = read_tallies(mcnpfile);
   
   // prints the alara irradiation history
-  print_alara("alara_irr",tallies,problem_map);
-
+  print_alara("alara_irr",tallies,routes);
+  
   return 0;
 }
