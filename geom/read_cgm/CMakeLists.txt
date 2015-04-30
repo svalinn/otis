@@ -2,21 +2,7 @@
 cmake_minimum_required(VERSION 2.8.4)
 
 # need c++11
-#list( APPEND CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11") 
 add_definitions(-std=c++11)
-
-# project
-project(OTIS)
-
-add_subdirectory(read_tally)
-add_subdirectory(geom)
-add_subdirectory(navigator)
-add_subdirectory(output)
-
-add_executable( otis main.cpp )
-
-# target include dirs
-include_directories(otis PUBLIC read_tally alara_output navigator read_cgm read_dot ${CMAKE_CURRENT_SOURCE_DIR})
 
 # needs iGeom 
 set(igeom_include_dirs ${CGM_DIR}/include)
@@ -33,11 +19,9 @@ ELSE(${CUBIT_VERSION} GREATER 12)
   set(cubit_libs ${cubit_lib_dirs}/libcubiti19.so) 
 ENDIF(${CUBIT_VERSION} GREATER 12 )
 
-#libs
-target_link_libraries(otis read_tally read_dot read_cgm navigator dot_output alara_output ${igeom_libs} ${cubit_libs})
-
-# install the executable
-INSTALL( TARGETS otis RUNTIME DESTINATION bin )
-#install(program otis destination bin)
-
+# set the library
+add_library(read_cgm read_cgm.cpp)
+# and the includes
+target_include_directories (read_cgm PUBLIC ${CMAKE_CURRENT_SOURCE_DIR} ${igeom_include_dirs})
+target_link_libraries(read_cgm navigator)
 

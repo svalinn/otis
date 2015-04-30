@@ -1,11 +1,7 @@
-#include <iostream>
-#include <fstream>
-#include <sstream>
-#include <string>
-#include <vector>
-#include <map>
-
+#ifndef READ_TALLY_HPP
+#define READ_TALLY_HPP 1
 #include "read_tally.hpp"
+#endif
 
 std::map<int,tally_struct> read_tallies(std::string filename)
 {

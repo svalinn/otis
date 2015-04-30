@@ -1,6 +1,10 @@
+#include <iostream>
+#include <fstream>
+#include <sstream>
+#include <string>
+#include <vector>
+#include <map>
 
-#ifndef READ_TALLY_HPP
-#define READ_TALLY_HPP
 struct tally_struct {
   int entity_number;
   double entity_size;
@@ -15,7 +19,6 @@ struct flux_result {
   double error;
 };
 
-#endif
 
 // print a specific tally from the map
 void print_tally(std::map<int,tally_struct> tallies, int tally_id, std::ostream &ostream);
