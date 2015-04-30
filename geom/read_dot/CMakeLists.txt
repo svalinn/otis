@@ -11,3 +11,4 @@ target_include_directories (read_dot PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 
 target_link_libraries(read_dot navigator)
 
+add_subdirectory(test)

@@ -8,6 +8,13 @@ add_definitions(-std=c++11)
 # project
 project(OTIS)
 
+enable_testing()
+
+#gtest
+SET ( GTEST_INC_DIR "" )
+ADD_SUBDIRECTORY( gtest EXCLUDE_FROM_ALL )
+INCLUDE_DIRECTORIES( ${GTEST_INC_DIR} )
+
 add_subdirectory(read_tally)
 add_subdirectory(geom)
 add_subdirectory(navigator)
