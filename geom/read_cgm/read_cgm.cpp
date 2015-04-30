@@ -9,19 +9,21 @@
 // constructor
 ReadCGM::ReadCGM(std::string filename, bool bidirectional)
 {
+  nw = new Network();
+
   // load model and build map
   problem_map = init_problem(filename);
 
   // if we want a two way network
   if(bidirectional)
-    nw.SetBiDirection( true );
+    nw->SetBiDirection( true );
 
   // build the network
   for ( it = problem_map.begin() ; it != problem_map.end() ; ++it)
     {
       for ( it_vec = it->second.begin() ; it_vec != it->second.end() ; ++it_vec) 
 	{
-	  nw.AddLink(it->first,*it_vec);
+	  nw->AddLink(it->first,*it_vec);
 	}
     }
 
@@ -145,7 +147,7 @@ int ReadCGM::vol_id(iBase_EntityHandle eh)
 }
 
 // provide read only access to the current network
-Network ReadCGM::get_network()
+Network* ReadCGM::get_network()
 {
   return nw;
 }

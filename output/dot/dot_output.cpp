@@ -39,7 +39,11 @@ void print_routes(std::map<int,std::vector<int> > routes)
 
       for ( it_vec = it->second.begin() ; it_vec != it->second.end() ; ++it_vec) 
 	{
-	  dot << *it_vec << " -> ";
+	  if ( it->second.end() - it_vec == 1 )
+	    dot << *it_vec;
+	  else
+	    dot << *it_vec << " -> ";
+	    
 	}
       dot << " [color=" << color[color_count] << "];" << std::endl;
       

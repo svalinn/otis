@@ -1,10 +1,27 @@
 #ifndef NETWORK_H
 #define NETWORK_H 1
-#include Network.h
+#include "Network.h"
 #endif
 
-bool ContainsNode( std::vector<int>& nodes, int node );
+class navigation {
+  public:
+  // new navigator
+  navigation(Network *network, int source);
+  // destructor
+  ~navigation();
 
-void DepthFirst( Network* network, 
-		 std::vector<int>& visited, 
-		 int end );
+  // return the unique routes
+  std::map<int,std::vector<int> > get_unique_routes();
+  // print the routes
+  void print_routes();
+
+  // does the 
+  bool ContainsNode( std::vector<int>& nodes, int node );
+  // search the network
+  void DepthFirst( int end );
+  private:
+  Network *ntwk;
+  std::map<int,std::vector<int> > routes;
+  std::vector<int> visited;
+  int route_counter;
+};

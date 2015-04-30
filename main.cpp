@@ -106,30 +106,43 @@ int main(int argc, char* argv[])
   std::string filename(cad_file);    
   std::string mcnpfile(mcnp_file);
 
-  Network new_pipes;
+  //  Network *new_pipes = new Network();
+  Network *new_pipes;
   std::map<int,std::vector<int> > problem_map;
 
   if(filename.find(".sat") != std::string::npos)
     {
+      std::cout << "GGM !" << std::endl;
       ReadCGM *geom = new ReadCGM(filename,true);
       new_pipes = geom->get_network();
       problem_map = geom->get_problem_map();
     }
   if(filename.find(".dot") != std::string::npos)
     {
+      std::cout << "DOT !" << std::endl;
       DotReader *geom = new DotReader(filename,true);
       new_pipes = geom->get_network();
       problem_map = geom->get_problem_map();
     }
 
   std::vector<int> visited;
-  visited.push_back( start_vol );
   std::cout << "Performing search..." << std::endl;
-  DepthFirst( &new_pipes, visited, target_vol );
+
+  // new navigator
+  navigation *nav = new navigation(new_pipes,start_vol);
+  
+  // do the search
+  nav->DepthFirst(target_vol);
+
+  // get the results of the search
+  std::map<int,std::vector<int> > routes = nav->get_unique_routes();
 
   // prints a dot graph of network connectivity & 
   // the unique routes
-  print_routes(problem_map);
+  print_routes(routes);
+
+  if(no_irr)
+    return 0;
     
   std::string mcnp_output(argv[4]);
   // reading tallies from file

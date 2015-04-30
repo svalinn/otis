@@ -16,7 +16,10 @@ class DotReader
   ~DotReader();
 
   // give access to the network
-  Network get_network();
+  Network* get_network();
+
+  // check the network for errors
+  bool check_network();
 
   // return map of the problem
   std::map<int,std::vector<int> > get_problem_map();
@@ -37,7 +40,7 @@ class DotReader
 
   // private variables
   private:
-  Network nw; // the pipe network
+  Network *nw; // the pipe network
   std::map<int,double> residence_times; // map of volume id and residence times
   std::map<int,std::vector<int> > problem_map;
 };

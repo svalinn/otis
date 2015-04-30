@@ -1,6 +1,39 @@
-#include "Network.h"
+#include "Navigation.hpp"
+#include <iostream>
 
-bool ContainsNode( std::vector<int>& nodes, int node )
+navigation::navigation(Network* network, int source_id)
+{
+  ntwk = network;
+  visited.push_back(source_id);
+}
+
+navigation::~navigation()
+{
+}
+
+// return the unique routes from the search
+std::map<int,std::vector<int> > navigation::get_unique_routes()
+{
+  return routes;
+}
+
+// return the unique routes from the search
+void navigation::print_routes()
+{
+  std::map<int,std::vector<int> > :: iterator it;
+  std::vector<int> :: iterator vec_it;
+  for ( it = routes.begin() ; it != routes.end() ; ++it )
+    {
+      std::cout << it->first << std::endl;
+      for ( vec_it = (it->second).begin() ; vec_it != (it->second).end() ; ++vec_it)
+	{
+	  std::cout << *vec_it <<",";
+	}
+      std::cout << std::endl;
+    }
+}
+
+bool navigation::ContainsNode( std::vector<int>& nodes, int node )
 {
   std::vector<int>::const_iterator nodes_it;
 
@@ -16,13 +49,11 @@ bool ContainsNode( std::vector<int>& nodes, int node )
 
 
 // Algorithm to recursively search network for paths
-void DepthFirst( Network* network, 
-		 std::vector<int>& visited, 
-		 int end )
+void navigation::DepthFirst( int end )
 {
   int back = visited.back();
 
-  std::vector< int > adjNode = network->GetAdjNodeIDs( back );
+  std::vector< int > adjNode = ntwk->GetAdjNodeIDs( back );
 
   // Examine adjacent nodes
   for ( std::vector<int>::iterator node_it = adjNode.begin();
@@ -39,6 +70,9 @@ void DepthFirst( Network* network,
 	  
 	  int hops = (int) visited.size();
 	  
+	  routes[route_counter]=visited;
+	  route_counter++;
+
 	  int n = (int) visited.size() - 1;
 
 	  visited.erase( visited.begin() + n );
@@ -60,7 +94,7 @@ void DepthFirst( Network* network,
         
       visited.push_back( node );
 
-      DepthFirst( network, visited, end );        
+      DepthFirst( end );        
 
       int n = (int) visited.size() - 1;
       visited.erase( visited.begin() + n );

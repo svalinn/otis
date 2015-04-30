@@ -11,7 +11,7 @@ class ReadCGM {
   ReadCGM(std::string filename, bool bidirectional);
   ~ReadCGM();
   // give access to the network
-  Network get_network();
+  Network* get_network();
   std::map<int,std::vector<int> > get_problem_map();
   
 
@@ -30,7 +30,7 @@ class ReadCGM {
 
   private:
     // the pipe network
-    Network nw;
+    Network *nw;
     // iGeom singleton
     iGeom_Instance igeom;
     // map of volume ids and links
