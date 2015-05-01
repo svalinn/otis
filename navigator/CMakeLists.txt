@@ -9,3 +9,5 @@ add_library(navigator Navigation.cpp Network.cpp)
 # and the includes
 target_include_directories (navigator PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 
+# add the tests
+add_subdirectory(test)
