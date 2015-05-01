@@ -22,6 +22,7 @@ ENDIF(${CUBIT_VERSION} GREATER 12 )
 # set the library
 add_library(read_cgm read_cgm.cpp)
 # and the includes
-target_include_directories (read_cgm PUBLIC ${CMAKE_CURRENT_SOURCE_DIR} ${igeom_include_dirs})
+target_include_directories (read_cgm PUBLIC ${CMAKE_CURRENT_SOURCE_DIR} ${igeom_include_dirs} navigator)
 target_link_libraries(read_cgm navigator)
 
+add_subdirectory(test)

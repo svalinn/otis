@@ -13,6 +13,7 @@ class ReadCGM {
   // give access to the network
   Network* get_network();
   std::map<int,std::vector<int> > get_problem_map();
+  bool check_network();
   
 
   private:

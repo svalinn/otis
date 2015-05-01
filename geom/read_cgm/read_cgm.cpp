@@ -26,7 +26,6 @@ ReadCGM::ReadCGM(std::string filename, bool bidirectional)
 	  nw->AddLink(it->first,*it_vec);
 	}
     }
-
 }
 
 // destructor
@@ -144,6 +143,16 @@ int ReadCGM::vol_id(iBase_EntityHandle eh)
   // get the data
   iGeom_getIntData(igeom,eh,global_id_tag,&id,&err);
   return id;
+}
+
+//
+bool ReadCGM::check_network()
+{
+  std::vector<int> links = nw->GetAdjNodeIDs(1);
+  if (links.size() == 0 )
+    return false;
+  else 
+    return true;
 }
 
 // provide read only access to the current network
