@@ -64,8 +64,6 @@ int main(int argc, char* argv[])
         default:
 	  return -1;
       }
-
-  std::cout << argc << std::endl;
   
   if ( argc == 1 | help_set)
     {
@@ -112,17 +110,31 @@ int main(int argc, char* argv[])
 
   if(filename.find(".sat") != std::string::npos)
     {
-      std::cout << "GGM !" << std::endl;
+      std::cout << "Using CGM Input" << std::endl;
+
       ReadCGM *geom = new ReadCGM(filename,true);
       new_pipes = geom->get_network();
       problem_map = geom->get_problem_map();
     }
   if(filename.find(".dot") != std::string::npos)
     {
-      std::cout << "DOT !" << std::endl;
+      std::cout << "Using DOT Input" << std::endl;
       DotReader *geom = new DotReader(filename,true);
       new_pipes = geom->get_network();
       problem_map = geom->get_problem_map();
+    }
+
+  // make sure source exists
+  if(problem_map.count(start_vol) == 0 ) 
+    {
+      std::cout << "Source volume " << start_vol << " doesnt exist" << std::endl;
+      return 1;
+    }
+  // make sure target exists
+  if(problem_map.count(target_vol) == 0 ) 
+    {
+      std::cout << "Target volume " << target_vol << " doesnt exist" << std::endl;
+      return 1;
     }
 
   std::vector<int> visited;
