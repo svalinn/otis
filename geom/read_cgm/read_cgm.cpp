@@ -44,7 +44,7 @@ std::map<int,std::vector<int> > ReadCGM::init_problem(std::string sat_file)
   const char* cgm_file_name = sat_file.c_str();
 
   bool act_att = true;
-  bool verbose_warnings = true;
+  bool verbose_warnings = false;
 
   // Determine CGM settings and amount of output
   set_cgm_attributes(act_att, verbose_warnings);
@@ -141,7 +141,6 @@ int ReadCGM::get_problem_members()
 	  {
 	    RefVolume* vol = dynamic_cast<RefVolume*>(grp_members[i]); //vols.get_and_step();
 	    int id = vol->id();
-	    std::cout << id << " " << vol << std::endl;
 	    id_map[id] = vol; // id map is class member variable
 	  }
 	return 0;
@@ -236,10 +235,6 @@ std::vector<RefVolume*> ReadCGM::get_neighbour_volumes(RefVolume *current_vol)
   
   // make set into vector
   std::copy(shared_vols.begin(), shared_vols.end(), std::back_inserter(shared_volumes));
-
-  
-  for(int i = 0 ; i < shared_volumes.size() ; i++ )
-    std::cout << current_vol->id() << " " << shared_volumes[i]->id() << std::endl;
   
   return shared_volumes;
 }
