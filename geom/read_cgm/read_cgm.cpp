@@ -33,92 +33,202 @@ ReadCGM::~ReadCGM()
 {
 }
 
+
 // initalises, loads 
 std::map<int,std::vector<int> > ReadCGM::init_problem(std::string sat_file)
 {
-  // initialise iGeom
-  int err;
-  std::string engine_opt = ";engine=";
-  engine_opt += "ACIS";
-  iGeom_newGeom(engine_opt.c_str(), &igeom, &err,engine_opt.length());
+  std::map<int, std::vector<int> > problem_map;
+  // Initialize CGM
+  InitCGMA::initialize_cgma();
 
-  // read in the geometry
-  iGeom_load(igeom, sat_file.c_str(),0,&err,sat_file.length(),0);
+  const char* cgm_file_name = sat_file.c_str();
 
-  // get the root set
-  iBase_EntitySetHandle root_set;
-  iGeom_getRootSet(igeom, &root_set, &err);
+  bool act_att = true;
+  bool verbose_warnings = true;
 
-  // detect the loaded volumes
-  int v_alloc = 0;
-  int v_size = 0;
-  iBase_EntityHandle *vols = NULL;
-  iGeom_getEntities(igeom, root_set, iBase_REGION, &vols, &v_alloc, 
-		    &v_size, &err);
+  // Determine CGM settings and amount of output
+  set_cgm_attributes(act_att, verbose_warnings);
 
-  // maps o
-  std::map<int,std::vector<int> > all_nodes;
-  // for all volumes determine the 
-  all_nodes = build_all_nodes(vols,v_size);
+  // Get CGM file type
+  const char* file_type = 0;
+  //  file_type = get_geom_file_type(cgm_file_name);
 
+  CubitStatus s;
+  // import the geometry
+  s = CubitCompat_import_solid_model(cgm_file_name,"ACIS_SAT");
+  if (CUBIT_SUCCESS != s) {
+    std::cout << cgm_file_name << ": Failed to read acis file" << std::endl;
+  }
+
+  // build the nodes of the problem
+  std::map<int,std::vector<int> > all_nodes = build_all_nodes();
+
+  // get the neighbour list
+    
   return all_nodes;
-
 }
 
-// sets builds a map of all volume ids key, with neighbours as vectors
-std::map<int,std::vector<int> > ReadCGM::build_all_nodes(iBase_EntityHandle *handles, int num_vols)
+std::map<int,std::vector<int> > ReadCGM::build_all_nodes()
 {
-  std::map<int,std::vector<int> > all_nodes;
-  int volume_id;
-  // build the nodes
-  for ( int i = 0 ; i < num_vols ; i++ )
+  std::map<int,std::vector<int> > problem_nodes;
+  // get the id/eh correspeondence
+  if(get_problem_members()!=0) std::cerr << "Failed to find 'water' group" << std::endl;
+  
+  std::map<int,RefVolume*>::iterator irf;
+  // loop over the water volumes
+  for ( irf = id_map.begin() ; irf != id_map.end() ; ++irf )
     {
-      volume_id = vol_id(handles[i]);
-      std::vector<iBase_EntityHandle> neighbours;
+      int id = irf->first;
+      RefVolume* vol = irf->second;
+      //      std::cout << id << " " << vol << " " << vol->id() << std::endl;
       // get the neighbour volumes
-      neighbours = get_neighbours(handles[i]);
-      std::vector<int> children; // children of the current volume
-      for ( unsigned int j = 0 ; j < neighbours.size() ; j++ )
-	children.push_back(vol_id(neighbours[j]));
-      all_nodes[volume_id]=children;
+      std::vector<int> neighbour_ids;
+      std::vector<RefVolume*> neighbours = get_neighbour_volumes(vol);
+      for ( int i = 0 ; i < neighbours.size() ; i++ )
+	{
+	  //	  int id_local = neighbours[i]->id();
+	  neighbour_ids.push_back( neighbours[i]->id() );
+	}
+      problem_nodes[id] = neighbour_ids;
     }
+  return problem_nodes;
+}
 
-  return all_nodes;
+
+int ReadCGM::get_problem_members()
+{
+  // list of entities
+  DLIList<RefEntity*> entitylist;
+  entitylist.clean_out();
+  // Get all entity groups from the CGM model
+  GeometryQueryTool::instance()->ref_entity_list("group", entitylist);
+
+#if CGM_MAJOR_VERSION > 13
+  DLIList<CubitString> name_list;
+#else
+  DLIList<CubitString*> name_list;
+#endif
+
+  // Loop over all groups
+  for (int i = entitylist.size(); i--; ) {
+    // Take the next group
+    RefEntity* grp = entitylist.get_and_step();
+    name_list.clean_out();
+
+    // Get the names of all entities in this group from the solid model
+    RefEntityName::instance()->get_refentity_name(grp, name_list);
+
+    if (name_list.size() == 0)
+      continue;
+    // Set pointer to first name of the group and set the first name to name1
+    name_list.reset();
+
+#if  CGM_MAJOR_VERSION > 13
+    CubitString name1 = name_list.get();
+#else
+    CubitString name1 = *name_list.get();
+#endif
+ 
+    // we have the water groupd
+    DLIList<RefEntity*> grp_members;
+    if(name1 == "Water")
+      {
+	RefGroup* group = (RefGroup*) grp;
+	group->get_child_ref_entities(grp_members);
+	std::cout << "Found the water group" << std::endl;
+	std::cout << "It contains " << grp_members.size() << " members" << std::endl;
+	for ( int i = 0 ; i < grp_members.size() ; i++)
+	  {
+	    RefVolume* vol = dynamic_cast<RefVolume*>(grp_members[i]); //vols.get_and_step();
+	    int id = vol->id();
+	    std::cout << id << " " << vol << std::endl;
+	    id_map[id] = vol; // id map is class member variable
+	  }
+	return 0;
+      }
+  }
+  return 1;
+}
+
+
+
+void ReadCGM::get_adjacent_entities(RefEntity *from,
+				    int to_dim,
+				    DLIList<RefEntity*> &adj_ents)
+{
+  TopologyEntity *topo_ent = const_cast<TopologyEntity*>(dynamic_cast<const TopologyEntity*>(from));
+  if (NULL == topo_ent) {
+    std::cerr << "Invalid entity passed to get_adjacent_entities" << std::endl;
+    return;
+  }
+
+  adj_ents.clean_out();
+
+  static DLIList<RefVertex*> tmp_verts;
+  static DLIList<RefEdge*> tmp_edges;
+  static DLIList<RefFace*> tmp_faces;
+  static DLIList<RefVolume*> tmp_volumes;
+
+  switch (to_dim) {
+  case 0:
+    tmp_verts.clean_out();
+    topo_ent->ref_vertices(tmp_verts);
+    CAST_LIST_TO_PARENT(tmp_verts, adj_ents);
+    break;
+  case 1:
+    tmp_edges.clean_out();
+    topo_ent->ref_edges(tmp_edges);
+    CAST_LIST_TO_PARENT(tmp_edges, adj_ents);
+    break;
+  case 2:
+    tmp_faces.clean_out();
+    topo_ent->ref_faces(tmp_faces);
+    CAST_LIST_TO_PARENT(tmp_faces, adj_ents);
+    break;
+  case 3:
+    tmp_volumes.clean_out();
+    topo_ent->ref_volumes(tmp_volumes);
+    CAST_LIST_TO_PARENT(tmp_volumes, adj_ents);
+    break;
+  default:
+    std::cerr  << "valid dimension passed" << std::endl;
+  }
+  return;
 }
 
 // for a given volume, return a vector of adjacent volumes
-std::vector<iBase_EntityHandle> ReadCGM::get_neighbours(iBase_EntityHandle current_vol)
+std::vector<RefVolume*> ReadCGM::get_neighbour_volumes(RefVolume *current_vol)
 {
   int dimension = 3;
-  iBase_EntityHandle *neighbour_surfaces = NULL;
+  DLIList<RefEntity*> neighbour_surfaces;
+  DLIList<RefEntity*> neighbour_volumes;
+
   int neighbour_surf_size = 0;
   int neighbour_occupy_size = 0;
 
   int err;
 
-  std::vector<iBase_EntityHandle> shared_volumes;
-  std::set<iBase_EntityHandle> shared_vols;
+  // 
+  std::vector<RefVolume*> shared_volumes;
+  std::set<RefVolume*> shared_vols;
   
+  // cast the ref vol in to refentity
+  RefEntity* vol_ent = dynamic_cast<RefEntity*>(current_vol);
   // gets the surfaces, shared by the volume
-  iGeom_getEntAdj(igeom,current_vol,dimension-1,&neighbour_surfaces,
-		  &neighbour_surf_size, &neighbour_occupy_size, &err);
+  get_adjacent_entities(vol_ent,2,neighbour_surfaces);
   
   // loop over the surfaces
-  for ( int i = 0 ; i < neighbour_occupy_size ; i++ ) 
+  for ( int i = 0 ; i < neighbour_surfaces.size() ; i++ ) 
     {
-      iBase_EntityHandle *neighbours = NULL;
-      int neighbours_alloc_size = 0;
-      int neighbours_occupy_size = 0;
+      RefEntity *neighbours = NULL;
+      // get the volumes shared by the surface
+      get_adjacent_entities(neighbour_surfaces[i],3,neighbour_volumes);
 
-      // find out which volumes share this surface
-      iGeom_getEntAdj(igeom,neighbour_surfaces[i],dimension,&neighbours,
-		      &neighbours_alloc_size, &neighbours_occupy_size, &err);
-
-      for ( int j = 0 ; j < neighbours_occupy_size ; j++ ) 
+      for ( int j = 0 ; j < neighbour_volumes.size() ; j++ ) 
 	{
-	  shared_vols.insert(neighbours[j]);
+	  RefVolume* shared_vol = dynamic_cast<RefVolume*>(neighbour_volumes[j]);
+	  shared_vols.insert(shared_vol);
 	}
-
     }
   
   // clear the current
@@ -127,21 +237,31 @@ std::vector<iBase_EntityHandle> ReadCGM::get_neighbours(iBase_EntityHandle curre
   // make set into vector
   std::copy(shared_vols.begin(), shared_vols.end(), std::back_inserter(shared_volumes));
 
+  
+  for(int i = 0 ; i < shared_volumes.size() ; i++ )
+    std::cout << current_vol->id() << " " << shared_volumes[i]->id() << std::endl;
+  
   return shared_volumes;
 }
 
-// given the ibase entity handle determine the volume id
-int ReadCGM::vol_id(iBase_EntityHandle eh)
+void ReadCGM::set_cgm_attributes(bool const act_attributes, bool const verbose)
 {
-  iBase_TagHandle global_id_tag;
-  std::string tag_name("GLOBAL_ID");
-  //  std::string tag_name("VOLUME_ID");
-  int err = 0;
-  int id;
-  // get the tag handle
-  iGeom_getTagHandle(igeom,&tag_name[0],&global_id_tag,&err,tag_name.length());
-  // get the data
-  iGeom_getIntData(igeom,eh,global_id_tag,&id,&err);
+  if (act_attributes) {
+    CGMApp::instance()->attrib_manager()->set_all_auto_read_flags(act_attributes);
+    CGMApp::instance()->attrib_manager()->set_all_auto_actuate_flags(act_attributes);
+  }
+  
+  if (!verbose) {
+    CGMApp::instance()->attrib_manager()->silent_flag(true);
+  }
+}
+ 
+
+
+// given the ibase entity handle determine the volume id
+int ReadCGM::vol_id(RefEntity *eh)
+{
+  int id = eh->id();
   return id;
 }
 
