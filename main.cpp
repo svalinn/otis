@@ -113,6 +113,11 @@ int main(int argc, char* argv[])
       std::cout << "Using CGM Input" << std::endl;
 
       ReadCGM *geom = new ReadCGM(filename,true);
+      if(!geom->check_network())
+	{
+	  std::cout << "Termination, with error" << std::endl;
+	  return 1;
+	}
       new_pipes = geom->get_network();
       problem_map = geom->get_problem_map();
     }
@@ -120,6 +125,12 @@ int main(int argc, char* argv[])
     {
       std::cout << "Using DOT Input" << std::endl;
       DotReader *geom = new DotReader(filename,true);
+      if(!geom->check_network())
+	{
+	  std::cout << "Termination, with error" << std::endl;
+	  return 1;
+	}
+
       new_pipes = geom->get_network();
       problem_map = geom->get_problem_map();
     }

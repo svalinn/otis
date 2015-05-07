@@ -25,18 +25,18 @@ target_include_directories (navigator_test PUBLIC navigator ${CMAKE_CURRENT_SOUR
 
 
 # network tests
-add_test(NAME NetworkTest.CheckLink COMMAND navigator_test "--gtest_filter=NetworkTest.CheckLink")
-add_test(NAME NetworkTest.AddLink COMMAND navigator_test "--gtest_filter=NetworkTest.AddLink")
-add_test(NAME NetworkTest.AddLinkF COMMAND navigator_test "--gtest_filter=NetworkTest.AddLinkF")
-add_test(NAME NetworkTest.Adjacent COMMAND navigator_test "--gtest_filter=NetworkTest.Adjacent")
-add_test(NAME NetworkTest.AdjacentOther COMMAND navigator_test "--gtest_filter=NetworkTest.AdjacentOther")
-add_test(NAME NetworkTest.Adjacent2Link COMMAND navigator_test "--gtest_filter=NetworkTest.Adjacent2Link")
-add_test(NAME NetworkTest.CheckBiDirectional COMMAND navigator_test "--gtest_filter=NetworkTest.CheckBidirectional")
-add_test(NAME NetworkTest.CheckNotBiDirectional COMMAND navigator_test "--gtest_filter=NetworkTest.CheckNotBidirectional")
+add_test(NAME NetworkTest.CheckLink COMMAND navigator_test --gtest_filter=NetworkTest.CheckLink)
+add_test(NAME NetworkTest.AddLink COMMAND navigator_test --gtest_filter=NetworkTest.AddLink)
+add_test(NAME NetworkTest.AddLinkF COMMAND navigator_test --gtest_filter=NetworkTest.AddLinkF)
+add_test(NAME NetworkTest.Adjacent COMMAND navigator_test --gtest_filter=NetworkTest.Adjacent)
+add_test(NAME NetworkTest.AdjacentOther COMMAND navigator_test --gtest_filter=NetworkTest.AdjacentOther)
+add_test(NAME NetworkTest.Adjacent2Link COMMAND navigator_test --gtest_filter=NetworkTest.Adjacent2Link)
+add_test(NAME NetworkTest.CheckBiDirectional COMMAND navigator_test --gtest_filter=NetworkTest.CheckBidirectional)
+add_test(NAME NetworkTest.CheckNotBiDirectional COMMAND navigator_test --gtest_filter=NetworkTest.CheckNotBidirectional)
 
 #nav tests
-add_test(NAME NavigationTest.RoutesNoDFS COMMAND navigator_test "--gtest_filter=NavigationTest.RoutesNoDFS")
-add_test(NAME NavigationTest.RoutesDFS COMMAND navigator_test "--gtest_filter=NavigationTest.RoutesDFS")
-add_test(NAME NavigationTest.RoutesDFSComplex COMMAND navigator_test "--gtest_filter=NavigationTest.RoutesDFSComplex")
-add_test(NAME NavigationTest.RoutesDFSMidTarget COMMAND navigator_test "--gtest_filter=NavigationTest.RoutesDFSMidTarget")
+add_test(NAME NavigationTest.RoutesNoDFS COMMAND navigator_test --gtest_filter=NavigationTest.RoutesNoDFS)
+add_test(NAME NavigationTest.RoutesDFS COMMAND navigator_test --gtest_filter=NavigationTest.RoutesDFS)
+add_test(NAME NavigationTest.RoutesDFSComplex COMMAND navigator_test --gtest_filter=NavigationTest.RoutesDFSComplex)
+add_test(NAME NavigationTest.RoutesDFSMidTarget COMMAND navigator_test --gtest_filter=NavigationTest.RoutesDFSMidTarget)
 

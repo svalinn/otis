@@ -52,10 +52,14 @@ class ReadCGM {
     void print_cubit_journal(std::string filename); 
 
   private:
+    /* the following variables are common to geom */
     // the pipe network
     Network *nw;
     // map of volume ids and links
     std::map<int,std::vector<int> > problem_map;
+    std::map<int,double> residence_times;
+
+    /* the following variables are specific to ReadCGM */
     // problem map iterator
     std::map<int,std::vector<int> >::iterator it;
     std::vector<int>::iterator it_vec;

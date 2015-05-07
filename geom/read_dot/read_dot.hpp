@@ -1,5 +1,6 @@
 #include <iostream>
 #include <string>
+#include <set>
 
 #ifndef NETWORK_H
   #define NETWORK_H 1
@@ -24,8 +25,11 @@ class DotReader
   // return map of the problem
   std::map<int,std::vector<int> > get_problem_map();
 
-  // Read the complete file
   private:
+  // builds the map of the problem
+  void build_problem_map(); 
+
+  // Read the complete file
   void read_dot_file(std::string filename);
  
   // process the link data
@@ -43,5 +47,6 @@ class DotReader
   Network *nw; // the pipe network
   std::map<int,double> residence_times; // map of volume id and residence times
   std::map<int,std::vector<int> > problem_map;
+  std::set<int> members; // set of member ids
 };
 
