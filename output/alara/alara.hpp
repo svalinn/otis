@@ -46,9 +46,12 @@ class AlaraOutput {
     void write_alara_fluxes(); //print the spectra
     void write_alara_input(); // print the input
     bool check_consistency(); // check the class instanciation for consistency
+    bool file_exists(const std::string &fname);
 
   private:
-    bool file_exists(const std::string &fname);
+    void write_alara_header(std::ofstream &alara_file);
+    void write_alara_footer(std::ofstream &alara_file);
+
 
   private:
     // class member variables

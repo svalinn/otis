@@ -10,7 +10,7 @@ int main(int argc, char* argv[])
   for ( int i = 0; i < argc; i++ ) 
   {
     std::string arg = argv[i];
-    if(arg.find("--dot_file=") != std::string::npos)
+    if(arg.find("--mcnp_file=") != std::string::npos)
       {
 	std::size_t found = arg.find('=');
 	if (found!=std::string::npos)

@@ -167,10 +167,8 @@ int main(int argc, char* argv[])
   if(no_irr)
     return 0;
     
-  std::string mcnp_output(argv[4]);
-
   // new alara output instance
-  AlaraOutput *alara = new AlaraOutput(routes, mcnp_output,
+  AlaraOutput *alara = new AlaraOutput(routes, mcnp_file,
 				       "fluxes");
   // write the flux and input
   alara->write_alara_fluxes();
