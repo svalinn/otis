@@ -9,10 +9,9 @@
 
 #include "read_cgm.hpp"
 #include "read_dot.hpp"
-#include "read_tally.hpp"
 #include "dot_output.hpp"
 #include "Navigation.hpp"
-
+#include "alara.hpp"
 
 // prints the help message
 void help()
@@ -164,12 +163,18 @@ int main(int argc, char* argv[])
   // the unique routes
   print_routes(routes);
 
+  // if we want just the network
   if(no_irr)
     return 0;
     
   std::string mcnp_output(argv[4]);
-  // reading tallies from file
-  std::map<int,tally_struct> tallies = read_tallies(mcnp_output);
+
+  // new alara output instance
+  AlaraOutput *alara = new AlaraOutput(routes, mcnp_output,
+				       "fluxes");
+  // write the flux and input
+  alara->write_alara_fluxes();
+  alara->write_alara_input();
 
   return 0;
 }

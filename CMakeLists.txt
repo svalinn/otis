@@ -23,7 +23,7 @@ add_subdirectory(output)
 add_executable( otis main.cpp )
 
 # target include dirs
-include_directories(otis PUBLIC read_tally alara_output navigator read_cgm read_dot ${CMAKE_CURRENT_SOURCE_DIR})
+include_directories(otis PUBLIC read_tally alara navigator read_cgm read_dot ${CMAKE_CURRENT_SOURCE_DIR})
 
 # needs iGeom 
 set(igeom_include_dirs ${CGM_DIR}/include)
@@ -41,7 +41,7 @@ ELSE(${CUBIT_VERSION} GREATER 12)
 ENDIF(${CUBIT_VERSION} GREATER 12 )
 
 #libs
-target_link_libraries(otis read_tally read_dot read_cgm navigator dot_output alara_output ${igeom_libs} ${cubit_libs})
+target_link_libraries(otis read_tally read_dot read_cgm navigator dot_output alara ${igeom_libs} ${cubit_libs})
 
 # install the executable
 INSTALL( TARGETS otis RUNTIME DESTINATION bin )
