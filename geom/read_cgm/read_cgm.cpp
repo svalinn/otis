@@ -338,6 +338,12 @@ bool ReadCGM::check_network()
   return true;
 }
 
+// return the residence times
+std::map<int, double> ReadCGM::get_residence_times()
+{
+  return residence_times;
+}
+
 // provide read only access to the current network
 Network* ReadCGM::get_network()
 {

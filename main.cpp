@@ -106,7 +106,6 @@ int main(int argc, char* argv[])
   //  Network *new_pipes = new Network();
   Network *new_pipes;
   std::map<int,std::vector<int> > problem_map;
-
   if(filename.find(".sat") != std::string::npos)
     {
       std::cout << "Using CGM Input" << std::endl;
@@ -118,8 +117,11 @@ int main(int argc, char* argv[])
 	  return 1;
 	}
       new_pipes = geom->get_network();
+      new_pipes->set_problem_map(geom->get_problem_map());
       problem_map = geom->get_problem_map();
+      new_pipes->set_residence_times(geom->get_residence_times());
     }
+
   if(filename.find(".dot") != std::string::npos)
     {
       std::cout << "Using DOT Input" << std::endl;
@@ -131,7 +133,9 @@ int main(int argc, char* argv[])
 	}
 
       new_pipes = geom->get_network();
+      new_pipes->set_problem_map(geom->get_problem_map());
       problem_map = geom->get_problem_map();
+      new_pipes->set_residence_times(geom->get_residence_times());
     }
 
   // make sure source exists
@@ -166,10 +170,10 @@ int main(int argc, char* argv[])
   // if we want just the network
   if(no_irr)
     return 0;
-    
+  
   // new alara output instance
   AlaraOutput *alara = new AlaraOutput(routes, mcnp_file,
-				       "fluxes");
+				       "fluxes", new_pipes );
   // write the flux and input
   alara->write_alara_fluxes();
   alara->write_alara_input();

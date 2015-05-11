@@ -35,6 +35,9 @@ class ReadCGM {
   bool check_network();
   int get_problem_members();
 
+  // return the residence times
+  std::map<int, double> get_residence_times();
+
   private:
     std::map<int,std::vector<int> > init_problem(std::string sat_file);
     void set_cgm_attributes(bool const act_attributes, bool const verbose);

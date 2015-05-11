@@ -10,6 +10,15 @@ class AlaraTest : public ::testing::Test
   protected:
     virtual void SetUp()
     {
+      nw = new Network();
+      nw->AddLink(1,2);
+      nw->AddLink(2,3);
+      residence_times[1]=1.0;
+      residence_times[2]=2.0;
+      residence_times[3]=2.0;
+
+      nw->set_residence_times(residence_times);
+
       std::vector<int> path;
       path.push_back(1);
       path.push_back(2);
@@ -17,6 +26,8 @@ class AlaraTest : public ::testing::Test
       uniq_paths[1] = path;
     }
   public:
+  Network *nw;
+  std::map<int,double> residence_times;
   std::map<int, std::vector<int> > uniq_paths;
   
 };
@@ -31,14 +42,14 @@ TEST_F(AlaraTest, ValidFile)
 // named constructor
 TEST_F(AlaraTest, ValidFilename)
 {
-  AlaraOutput *alara = new AlaraOutput(uniq_paths,mcnp_file,"alara_prob");
+  AlaraOutput *alara = new AlaraOutput(uniq_paths,mcnp_file,"alara_prob",nw);
   EXPECT_EQ(alara->get_filename(),"alara_prob");
 }
 
 // named constructor
 TEST_F(AlaraTest, ValidMCNPFilename)
 {
-  AlaraOutput *alara = new AlaraOutput(uniq_paths,mcnp_file,"alara_prob");
+  AlaraOutput *alara = new AlaraOutput(uniq_paths,mcnp_file,"alara_prob",nw);
   EXPECT_EQ(alara->get_mcnp_filename(),mcnp_file);
 }
 
@@ -61,7 +72,7 @@ TEST_F(AlaraTest, SetMCNPFilename)
 // check instanciated data for correctness
 TEST_F(AlaraTest, ValidOutput)
 {
-  AlaraOutput *alara = new AlaraOutput(uniq_paths,mcnp_file,"alara_prob");
+  AlaraOutput *alara = new AlaraOutput(uniq_paths,mcnp_file,"alara_prob",nw);
   EXPECT_EQ(alara->check_consistency(),true);
 }
 
@@ -77,7 +88,7 @@ TEST_F(AlaraTest, InValidOutput)
   std::map<int, std::vector<int> > local_map;
   local_map[1] = paths;
 
-  AlaraOutput *alara = new AlaraOutput(local_map,mcnp_file,"alara_prob");
+  AlaraOutput *alara = new AlaraOutput(local_map,mcnp_file,"alara_prob",nw);
   EXPECT_EQ(alara->check_consistency(),false);
 }
 

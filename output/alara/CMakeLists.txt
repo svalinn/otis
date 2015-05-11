@@ -7,10 +7,10 @@ add_definitions(-std=c++11)
 # set the library
 add_library(alara alara.cpp)
 # and the includes
-target_include_directories (alara PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
+target_include_directories (alara PUBLIC ${CMAKE_CURRENT_SOURCE_DIR} navigator)
 
 # 
-target_link_libraries(alara read_tally)
+target_link_libraries(alara read_tally navigator)
 
 # include the tests
 add_subdirectory(test)

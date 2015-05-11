@@ -26,6 +26,7 @@ DotReader::~DotReader()
 {
 }
 
+// retrurn the network
 Network* DotReader::get_network()
 {
   return nw;
@@ -35,6 +36,12 @@ Network* DotReader::get_network()
 std::map<int,std::vector<int> > DotReader::get_problem_map()
 {
   return problem_map;
+}
+
+// return the residence times
+std::map<int, double> DotReader::get_residence_times()
+{
+  return residence_times;
 }
 
 bool DotReader::check_network()

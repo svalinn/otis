@@ -3,11 +3,12 @@
 // constructor
 AlaraOutput::AlaraOutput(std::map<int, std::vector<int> > routes,
 			 std::string mcnp_filename,
-			 std::string filename)
+			 std::string filename, Network *net)
 {
   set_filename(filename);
   set_routes(routes);
   set_mcnp_filename(mcnp_filename);
+  set_residence_times(net->get_residence_times());
 
   // make sure the file exists
   std::cout << mcnp_filename << std::endl;
@@ -79,6 +80,13 @@ void AlaraOutput::set_routes(std::map<int, std::vector<int> > flow_routes )
   routes = flow_routes;
 }
 
+// set the residence times
+void AlaraOutput::set_residence_times(std::map<int, double > residency_times )
+{
+  // set the route data
+  residence_times = residency_times;
+}
+
 // print out the unique alara fluxes file
 void AlaraOutput::write_alara_fluxes()
 {
@@ -106,24 +114,16 @@ void AlaraOutput::write_alara_fluxes()
 void AlaraOutput::write_alara_header(std::ofstream &alara_file)
 {
   // write the alara_input deck
-  alara_file << "## $Id: sample5,v 1.3 2004-09-21 19:45:03 wilsonp Exp $" << std::endl;
-  alara_file << "    ## Sample 4: Advanced" << std::endl;
-  alara_file << "    ## Highlights: rectangular geometry with volumes, isotopic changes in new" << std::endl;
-  alara_file << "    ## element library, spatial norm, photon source output, changes in tolerance" << std::endl;
-  alara_file << "## and impurity settings" << std::endl;
-  alara_file << "##" << std::endl;
-  alara_file << "    ## NOTE: you should run sample1 before any other samples to ensure" << std::endl;
-  alara_file << "## that the data is available" << std::endl;
   alara_file << "##" << std::endl;
   alara_file << "" << std::endl;
   alara_file << "geometry rectangular" << std::endl;
   alara_file << "" << std::endl;
   alara_file << "volumes" << std::endl;
-  alara_file << "    125.0zone_1" << std::endl;
+  alara_file << "    125.0 zone_1" << std::endl;
   alara_file << "end" << std::endl;
   alara_file << "" << std::endl;
   alara_file << "mat_loading" << std::endl;
-  alara_file << "    zone_1mix_1" << std::endl;
+  alara_file << "    zone_1 mix_1" << std::endl;
   alara_file << "end" << std::endl;
   alara_file << "" << std::endl;
   alara_file << "spatial_norm" << std::endl;
@@ -142,7 +142,7 @@ void AlaraOutput::write_alara_header(std::ofstream &alara_file)
 void AlaraOutput::write_alara_footer(std::ofstream &alara_file)
 {
   alara_file << "pulsehistory steady_state" << std::endl;
-  alara_file << "    10 s" << std::endl;
+  alara_file << "    0 s" << std::endl;
   alara_file << "end" << std::endl;
   alara_file << "" << std::endl;
   alara_file << "cooling" << std::endl;
@@ -168,7 +168,7 @@ void AlaraOutput::write_alara_input()
       // open a file
       std::vector<int> :: iterator vec_it;
       std::ofstream alara_file;
-      alara_file.open("test.txt");
+      alara_file.open("test_"+std::to_string(map_it->first));
       write_alara_header(alara_file);
       // write fluxes
       alara_file << "flux flux_1 new_flux 5.0E7 0 default" << std::endl;
@@ -177,7 +177,7 @@ void AlaraOutput::write_alara_input()
 	    
       for ( vec_it = map_it->second.begin() ; vec_it != map_it->second.end() ; ++vec_it )
 	{
-	    alara_file << "    1 y flux_1 steady_state 0 s" << std::endl;
+	  alara_file << "    " << std::to_string(residence_times[*vec_it]) << " s flux_1 steady_state 0 s" << std::endl;
 	}
       alara_file << "end" << std::endl;	    
       write_alara_footer(alara_file);

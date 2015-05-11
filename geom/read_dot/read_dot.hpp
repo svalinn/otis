@@ -25,6 +25,9 @@ class DotReader
   // return map of the problem
   std::map<int,std::vector<int> > get_problem_map();
 
+  // return the residence times
+  std::map<int, double> get_residence_times();
+
   private:
   // builds the map of the problem
   void build_problem_map(); 

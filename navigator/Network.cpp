@@ -130,3 +130,29 @@ void Network::SetBiDirection( bool bi )
 {
   bi_direction = bi;
 }
+
+// get the residence times
+std::map<int,double> Network::get_residence_times()
+{
+  return residence_times;
+}
+
+// get the residence times
+std::map<int,std::vector<int> > Network::get_problem_map()
+{
+  return problem_map;
+}
+
+// set the resience times
+void Network::set_residence_times(std::map<int,double> residency_times)
+{
+  residence_times = residency_times;
+}
+
+// set the resience times
+void Network::set_problem_map(std::map<int,std::vector<int> > problem_maps)
+{
+  problem_map = problem_maps;
+}
+
+

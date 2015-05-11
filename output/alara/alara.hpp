@@ -16,6 +16,11 @@
 #include "read_tally.hpp"
 #endif
 
+#ifndef NETWORK_H 
+#define NETWORK_H 1
+#include "Network.h"
+#endif
+
 /*
 struct tally_struct {
   int entity_number;
@@ -30,13 +35,14 @@ class AlaraOutput {
   public:
     AlaraOutput(std::map<int, std::vector<int> > unique_flow_routes,
                 std::string mcnp_filename,
-                std::string filename);
+                std::string filename, Network *nw);
     AlaraOutput();
    ~AlaraOutput(); // destructor
 
     void set_routes(std::map<int, std::vector<int> > unique_flow_routes); // set the problem routes
     void set_tallies(std::map<int, tally_struct> tally_results); // set the tallies
     void set_filename(std::string filename);
+    void set_residence_times(std::map<int,double> residence_times);
     void set_mcnp_filename(std::string filename); 
   
     std::string get_filename();
@@ -57,6 +63,7 @@ class AlaraOutput {
     // class member variables
     std::string output_file;
     std::string mcnp_filename;
+    std::map<int, double> residence_times;
     std::map<int, std::vector<int> > routes; // map of unique routes in the problem
     std::map<int, tally_struct> problem_tallies; // the tally output for the problem
 };
