@@ -1,11 +1,7 @@
-#include <iostream>
-#include <fstream>
-#include <sstream>
-#include <string>
-#include <vector>
-#include <map>
-
+#ifndef READ_TALLY_HPP
+#define READ_TALLY_HPP 1
 #include "read_tally.hpp"
+#endif
 
 std::map<int,tally_struct> read_tallies(std::string filename)
 {
@@ -99,7 +95,7 @@ void print_tally(std::map<int,tally_struct> tallies, int tally_id, std::ostream 
   tally = tallies[tally_id];
   
   ostream << "#tally " << tally_id << std::endl;
-  for ( int i = tally.ebins.size() ; i != 0 ; --i )
+  for ( int i = tally.ebins.size() - 1 ; i != 0 ; --i )
     {
       ostream << tally.ebins[i] << " " << tally.result[i] << " " << tally.error[i] << std::endl;
     }

@@ -8,27 +8,29 @@ add_definitions(-std=c++11)
 # project
 project(OTIS)
 
+enable_testing()
+
+#gtest
+SET ( GTEST_INC_DIR "" )
+ADD_SUBDIRECTORY( gtest EXCLUDE_FROM_ALL )
+INCLUDE_DIRECTORIES( ${GTEST_INC_DIR} )
+
+add_subdirectory(read_tally)
+add_subdirectory(geom)
+add_subdirectory(navigator)
+add_subdirectory(output)
+
+add_executable( otis main.cpp )
+
+# target include dirs
+include_directories(otis PUBLIC read_tally alara navigator read_cgm read_dot ${CMAKE_CURRENT_SOURCE_DIR})
+
 # needs iGeom 
 set(igeom_include_dirs ${CGM_DIR}/include)
 set(igeom_lib_dirs ${CGM_DIR}/lib)
 
 # needs cubit
 set(cubit_lib_dirs ${CUBIT_DIR}/bin )
-
-# navigator_source
-set(navigator_source navigator/Network.cpp)
-
-# read_tally_source
-set(read_tally_source read_tally/read_tally.cpp)
-
-# alara source
-set(alara_source alara/alara.cpp)
-
-# executable
-add_executable( otis main.cpp ${navigator_source} ${read_tally_source} ${alara_source} )
-
-# target include dirs
-include_directories(otis navigator read_tally alara ${CMAKE_CURRENT_SOURCE_DIR} ${igeom_include_dirs})
 
 # cgm libs
 set(igeom_libs ${igeom_lib_dirs}/libiGeom.so ${igeom_lib_dirs}/libcgm.so)
@@ -39,10 +41,10 @@ ELSE(${CUBIT_VERSION} GREATER 12)
 ENDIF(${CUBIT_VERSION} GREATER 12 )
 
 #libs
-target_link_libraries(otis ${igeom_libs} ${cubit_libs})
+target_link_libraries(otis read_tally read_dot read_cgm navigator dot_output alara ${igeom_libs} ${cubit_libs})
 
 # install the executable
-#install(target otis runtime destination ${INSTALL_BIN_DIR})
+INSTALL( TARGETS otis RUNTIME DESTINATION bin )
 #install(program otis destination bin)
 
 

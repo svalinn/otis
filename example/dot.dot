@@ -1,0 +1,14 @@
+// commment
+digraph g {
+ // connections
+ 1 -> 2;
+ 1 -> 3;
+ 3 -> 2;
+ 2 -> 4;
+
+ // residence times and id numbers
+ 1 [label="vol 1 40 s"]
+ 2 [label="vol 2 10.1 s"]
+ 3 [label="vol 3 3 s"]
+ 4 [label="vol 4 1.0 s"]
+}
