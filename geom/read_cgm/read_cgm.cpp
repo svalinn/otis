@@ -29,7 +29,9 @@ ReadCGM::ReadCGM(std::string filename, bool bidirectional)
 	  nw->AddLink(it->first,*it_vec);
 	}
     }
+  // clearout the geometry instance, cgm singleton
   GeometryQueryTool::instance()->delete_geometry();
+  // shutdown cgm
   InitCGMA::deinitialize_cgma();
 }
 
@@ -266,7 +268,12 @@ std::vector<RefVolume*> ReadCGM::get_neighbour_volumes(RefVolume *current_vol)
       for ( int j = 0 ; j < neighbour_volumes.size() ; j++ ) 
 	{
 	  RefVolume* shared_vol = dynamic_cast<RefVolume*>(neighbour_volumes[j]);
-	  shared_vols.insert(shared_vol);
+	  // only allow water volumes to be added to shared list
+	  // i.e. those in the id_map
+	  if(id_map[shared_vol->id()] == 0 )
+	    continue;
+	  else
+	    shared_vols.insert(shared_vol);
 	}
     }
   
