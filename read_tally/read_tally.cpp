@@ -95,7 +95,7 @@ void print_tally(std::map<int,tally_struct> tallies, int tally_id, std::ostream 
   tally = tallies[tally_id];
   
   ostream << "#tally " << tally_id << std::endl;
-  for ( int i = tally.ebins.size() ; i != 0 ; --i )
+  for ( int i = tally.ebins.size() - 1 ; i != 0 ; --i )
     {
       ostream << tally.ebins[i] << " " << tally.result[i] << " " << tally.error[i] << std::endl;
     }
