@@ -134,8 +134,8 @@ void AlaraOutput::write_alara_header(std::ofstream &alara_file)
   alara_file << "" << std::endl;
   alara_file << "mixture mix_1" << std::endl;
   alara_file << "    element h:1  1.1190E-1 1 " << std::endl;
-	alara_file << "    element h:2  2.5720E-5 1 " << std::endl;
-	alara_file << "    element o:16  8.8807E-1 8 " << std::endl;
+  alara_file << "    element h:2  2.5720E-5 1 " << std::endl;
+  alara_file << "    element o:16  8.8807E-1 8 " << std::endl;
   alara_file << "end" << std::endl;
   alara_file << "" << std::endl;
 }
@@ -143,7 +143,7 @@ void AlaraOutput::write_alara_header(std::ofstream &alara_file)
 void AlaraOutput::write_alara_footer(std::ofstream &alara_file)
 {
   alara_file << "pulsehistory steady_state" << std::endl;
-  alara_file << "    0 s" << std::endl;
+  alara_file << "  1  0 s" << std::endl;
   alara_file << "end" << std::endl;
   alara_file << "" << std::endl;
   alara_file << "cooling" << std::endl;
@@ -169,23 +169,41 @@ void AlaraOutput::write_alara_input()
       // open a file
       std::vector<int> :: iterator vec_it;
       std::ofstream alara_file;
-			std::cout << map_it->first << std::endl;
+      std::cout << map_it->first << std::endl;
       alara_file.open("alara_"+std::to_string(map_it->first));
       write_alara_header(alara_file);
       // write fluxes
-      alara_file << "flux flux_1 " << output_file << "_" << map_it->first;
-      alara_file << " 5.0E7 0 default" << std::endl;
-      alara_file << "" << std::endl;
-      alara_file << "schedule irradation" << std::endl;
 
       for ( vec_it = map_it->second.begin() ; vec_it != map_it->second.end() ; ++vec_it )
 	{
-	  alara_file << "    " << std::to_string(residence_times[*vec_it]) << " s flux_1 steady_state 0 s" << std::endl;
+	  alara_file << "flux flux_" << (*vec_it)-1 << " " << output_file << "_" << map_it->first;
+	  alara_file << " 5.0E7 " << (*vec_it)-1 << " default" << std::endl;
+	}
+      alara_file << std::endl;
+      alara_file << "schedule irradation" << std::endl;
+      for ( vec_it = map_it->second.begin() ; vec_it != map_it->second.end() ; ++vec_it )
+	{
+	  alara_file << "    " << std::to_string(residence_times[*vec_it]) << " s flux_" << (*vec_it)-1  << " steady_state 0 s" << std::endl;
 	}
       alara_file << "end" << std::endl;
       write_alara_footer(alara_file);
       alara_file.close();
     }
+}
+
+void AlaraOutput::write_alara_isolib()
+{ 
+  // open the isolib file
+  std::ofstream isolib;
+  
+  isolib.open("new_isolib");
+  isolib << "h:1   1.00782504   1 1.0 1" << std::endl;
+  isolib << " 1 100" << std::endl;
+  isolib << "h:2   2.01410178   1 1.0 1" << std::endl;
+  isolib << " 1 100" << std::endl;
+  isolib << "o:16  15.9949146   8 1.0 1" << std::endl;
+  isolib << "1 100" << std::endl;
+  isolib.close();      
 }
 
 // check to see if the file exists

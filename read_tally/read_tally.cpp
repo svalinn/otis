@@ -78,13 +78,15 @@ void print_tally(std::map<int,tally_struct> tallies, int tally_id, std::ostream 
   int count = 0;
   for ( int i = tally.ebins.size() - 1 ; i != 0 ; --i )
     {
-      if ( i > 0 && count%6)
+      if ( i > 0 && count%10)
         ostream << tally.result[i] << " ";
       else
         ostream << tally.result[i] << std::endl;
       count++;
     }
   ostream << std::endl;
+  ostream << std::endl;
+
   return;
 }
 

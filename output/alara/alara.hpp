@@ -51,6 +51,8 @@ class AlaraOutput {
     /* io */
     void write_alara_fluxes(); //print the spectra
     void write_alara_input(); // print the input
+    void write_alara_isolib(); // write the isolib file
+
     bool check_consistency(); // check the class instanciation for consistency
     bool file_exists(const std::string &fname);
 

@@ -177,6 +177,7 @@ int main(int argc, char* argv[])
   // write the flux and input
   alara->write_alara_fluxes();
   alara->write_alara_input();
+  alara->write_alara_isolib();
 
   return 0;
 }
