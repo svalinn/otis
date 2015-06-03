@@ -28,7 +28,7 @@ std::map<int,tally_struct> read_tallies(std::string filename)
 	      // line is now on the type of particle line
 	      //     std::cout << line << std::endl;
 
-	      // pull two more lines and now 
+	      // pull two more lines and now
 	      std::getline(data,line); // pull another line
 	      std::getline(data,line); // pull another line should be on volumes line
 	      //	      std::cout << line << std::endl;
@@ -46,7 +46,7 @@ std::map<int,tally_struct> read_tallies(std::string filename)
 		  //		  std::cout << vol_id << " ";
 		  for ( int i = 0 ; i < tally_data.size() ; i++ )
 		    {
-		      
+
 		      /*
 		      (it->second).ebins.push_back(tally_data[i].energy);
 		      (it->second).result.push_back(tally_data[i].flux);
@@ -55,36 +55,16 @@ std::map<int,tally_struct> read_tallies(std::string filename)
 		      tallies[vol_id].ebins.push_back(tally_data[i].energy);
 		      tallies[vol_id].result.push_back(tally_data[i].flux);
 		      tallies[vol_id].error.push_back(tally_data[i].error);
-		      
+
 		    }
 		}
 	      tallies.insert(tmp_tallies.begin(), tmp_tallies.end());
 
-	      /*
-	      std::vector<double> :: iterator it_a;
-	      for ( it = tallies.begin() ; it != tallies.end() ; ++it )
-		{
-		  std::cout << (it->first) << " " << (it->second).entity_size << std::endl;
-		  for ( it_a = (it->second).ebins.begin() ; it_a != (it->second).ebins.end() ; it_a++ )
-		    {
-		      std::cout << *it_a << std::endl;
-		    }
-		}
-	      */    
+
 	    }
 	}
       data.close();
     }
-
-  /*
-  std::map<int,tally_struct>::iterator it;
-  for ( it = tallies.begin() ; it != tallies.end() ; ++it )
-    {
-      std::cout << it->first << std::endl;
-    }
-  */
-  //  print_tally(tallies,vol_query);
-
   return tallies;
 }
 
@@ -93,12 +73,18 @@ void print_tally(std::map<int,tally_struct> tallies, int tally_id, std::ostream 
 {
   tally_struct tally;
   tally = tallies[tally_id];
-  
-  ostream << "#tally " << tally_id << std::endl;
+
+  //ostream << "#tally " << tally_id << std::endl;
+  int count = 0;
   for ( int i = tally.ebins.size() - 1 ; i != 0 ; --i )
     {
-      ostream << tally.ebins[i] << " " << tally.result[i] << " " << tally.error[i] << std::endl;
+      if ( i > 0 && count%6)
+        ostream << tally.result[i] << " ";
+      else
+        ostream << tally.result[i] << std::endl;
+      count++;
     }
+  ostream << std::endl;
   return;
 }
 
@@ -109,7 +95,7 @@ std::map<int,tally_struct> read_tally_volumes(std::ifstream &data)
   std::map<int,tally_struct> initial_data; //the output data
   std::string line; // the current line being read
 
-  tally_struct current_tally; 
+  tally_struct current_tally;
 
   std::getline(data,line); // pop new line
   while ( volume_data )
@@ -151,9 +137,9 @@ std::map<int,tally_struct> read_tally_volumes(std::ifstream &data)
 	}
       if ( line.find("cell") == std::string::npos )
 	volume_data = false;
-      
+
     }
-  
+
   return initial_data;
 }
 
@@ -161,7 +147,7 @@ std::map<int,tally_struct> read_tally_volumes(std::ifstream &data)
 std::vector<flux_result> read_tally_atomic(std::ifstream &data, int &vol_id)
 {
   std::vector<flux_result> tally_data;
-  std::string line; // current line read from data 
+  std::string line; // current line read from data
   flux_result tally_r;
   double energy,flux,error;
 
@@ -195,7 +181,7 @@ std::vector<flux_result> read_tally_atomic(std::ifstream &data, int &vol_id)
 
   // now we read n flux values until we get a total line
   std::getline(data,line);
-  // then do advance the data!  
+  // then do advance the data!
 
   return tally_data;
 }

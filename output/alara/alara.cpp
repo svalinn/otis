@@ -93,13 +93,13 @@ void AlaraOutput::write_alara_fluxes()
   // loop over the problem map calling print_tally for each volume
   // write out to unique fluxes file
   std::map<int,std::vector<int> >::iterator it;
-  std::vector<int>::iterator path_it;      
+  std::vector<int>::iterator path_it;
 
   // writes each flux spectra encountered along the route to a unique file
   for ( it = routes.begin() ; it != routes.end() ; ++it )
     {
       std::ofstream myfile;
-      myfile.open(output_file+std::to_string(it->first));
+      myfile.open(output_file+"_"+std::to_string(it->first));
       // dump each route to a seperate flux file
       for ( path_it = it->second.begin() ; path_it != it->second.end() ; ++path_it )
 	{
@@ -130,11 +130,12 @@ void AlaraOutput::write_alara_header(std::ofstream &alara_file)
   alara_file << "    1" << std::endl;
   alara_file << "end" << std::endl;
   alara_file << "" << std::endl;
-  alara_file << "material_lib matlib" << std::endl;
   alara_file << "element_lib new_isolib" << std::endl;
   alara_file << "" << std::endl;
   alara_file << "mixture mix_1" << std::endl;
-  alara_file << "    material co 1 1 " << std::endl;
+  alara_file << "    element h:1  1.1190E-1 1 " << std::endl;
+	alara_file << "    element h:2  2.5720E-5 1 " << std::endl;
+	alara_file << "    element o:16  8.8807E-1 8 " << std::endl;
   alara_file << "end" << std::endl;
   alara_file << "" << std::endl;
 }
@@ -168,18 +169,20 @@ void AlaraOutput::write_alara_input()
       // open a file
       std::vector<int> :: iterator vec_it;
       std::ofstream alara_file;
-      alara_file.open("test_"+std::to_string(map_it->first));
+			std::cout << map_it->first << std::endl;
+      alara_file.open("alara_"+std::to_string(map_it->first));
       write_alara_header(alara_file);
       // write fluxes
-      alara_file << "flux flux_1 new_flux 5.0E7 0 default" << std::endl;
+      alara_file << "flux flux_1 " << output_file << "_" << map_it->first;
+      alara_file << " 5.0E7 0 default" << std::endl;
       alara_file << "" << std::endl;
       alara_file << "schedule irradation" << std::endl;
-	    
+
       for ( vec_it = map_it->second.begin() ; vec_it != map_it->second.end() ; ++vec_it )
 	{
 	  alara_file << "    " << std::to_string(residence_times[*vec_it]) << " s flux_1 steady_state 0 s" << std::endl;
 	}
-      alara_file << "end" << std::endl;	    
+      alara_file << "end" << std::endl;
       write_alara_footer(alara_file);
       alara_file.close();
     }
@@ -197,7 +200,7 @@ bool AlaraOutput::check_consistency()
 {
   // route iterator
   std::map<int, std::vector<int> > :: iterator route_it;
-  
+
   // loop over all routes
   for ( route_it = routes.begin() ; route_it != routes.end() ; ++route_it )
     {

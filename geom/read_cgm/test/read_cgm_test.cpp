@@ -78,3 +78,4 @@ TEST_F(CGMReaderTest, CheckProblemMapsFalse)
   //  Network *net = geom_local->get_network();
   EXPECT_FALSE(geom_local->check_network());
 }
+

@@ -15,7 +15,7 @@ class navigation {
   // print the routes
   void print_routes();
 
-  // does the 
+  // does the
   bool ContainsNode( std::vector<int>& nodes, int node );
   // search the network
   void DepthFirst( int end );
@@ -23,5 +23,5 @@ class navigation {
   Network *ntwk;
   std::map<int,std::vector<int> > routes;
   std::vector<int> visited;
-  int route_counter;
+  int route_counter = 0;
 };
