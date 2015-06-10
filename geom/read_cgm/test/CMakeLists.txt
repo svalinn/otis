@@ -43,3 +43,6 @@ add_test(NAME ReadCGMTest.CheckProblemMapsFalse COMMAND read_cgm_test --gtest_fi
  --cgm_file=${CMAKE_CURRENT_SOURCE_DIR}/test_geom_water.sat)
 add_test(NAME ReadCGMTest.CheckVolumesWater COMMAND read_cgm_test --gtest_filter=CGMReaderTest.CheckProblemMapsFalse
  --cgm_file=${CMAKE_CURRENT_SOURCE_DIR}/model1.sat)
+add_test(NAME ReadCGMTest.CheckFlowRateMetadata COMMAND read_cgm_test --gtest_filter=CGMReaderTest.CheckFlowRateMetadata
+ --cgm_file=${CMAKE_CURRENT_SOURCE_DIR}/test_geom_water_flow.sat)
+

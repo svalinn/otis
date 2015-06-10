@@ -79,3 +79,12 @@ TEST_F(CGMReaderTest, CheckProblemMapsFalse)
   EXPECT_FALSE(geom_local->check_network());
 }
 
+// the data contains the flowrate keyword
+TEST_F(CGMReaderTest, CheckFlowRateMetadata)
+{
+  // create new network
+  ReadCGM *geom_local = new ReadCGM(cgm_file,false);
+  // get a copy of the netowrk
+  EXPECT_TRUE(geom_local->check_network());
+}
+
