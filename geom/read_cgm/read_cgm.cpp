@@ -227,13 +227,11 @@ int ReadCGM::get_problem_members()
 	    // flowrate in kg/s
 	    // volume in cubic centimetres
 	    // density 0.936 g/cc * 1000 = kg/m3
-	    time = (flowrate*(volume/100.))/(1000*0.936);
+	    //	    time = (flowrate*(volume/1.e6))/(1000*0.936);
+	    std::cout << flowrate << std::endl;
+	    time = ((volume/1.e6)*0.936*1000)/flowrate;
 	    residence_times[id] = time; // residence_times is class member
 	  }
-      }
-    else
-      {
-	std::cerr << "Neither the 'time:' or 'flowrate:' token was found" << std::endl;
       }
   }
   return 1;

@@ -44,19 +44,22 @@ std::map<int,tally_struct> read_tallies(std::string filename)
 		  int vol_id;
 		  std::vector<flux_result> tally_data = read_tally_atomic(data,vol_id);
 		  //		  std::cout << vol_id << " ";
+		  std::vector<double> e_bins;
+		  std::vector<double> t_data;
+		  std::vector<double> err_data;
 		  for ( int i = 0 ; i < tally_data.size() ; i++ )
 		    {
-
-		      /*
-		      (it->second).ebins.push_back(tally_data[i].energy);
-		      (it->second).result.push_back(tally_data[i].flux);
-		      (it->second).error.push_back(tally_data[i].error);
-		      */
-		      tallies[vol_id].ebins.push_back(tally_data[i].energy);
-		      tallies[vol_id].result.push_back(tally_data[i].flux);
-		      tallies[vol_id].error.push_back(tally_data[i].error);
-
+		      e_bins.push_back(tally_data[i].energy);
+		      t_data.push_back(tally_data[i].flux);
+		      err_data.push_back(tally_data[i].error);
+		      //		      std::cout << vol_id << " " << tally_data[i].energy << " " << tally_data[i].flux;
+		      //		      std::cout << " " << tally_data[i].error << " " << tallies[vol_id].ebins.size() << std::endl;
 		    }
+		  tallies[vol_id].ebins = e_bins;
+		  tallies[vol_id].result = t_data;
+		  tallies[vol_id].error = err_data;
+		  std::cout << vol_id << " " << tallies[vol_id].ebins.size() << std::endl;
+				      
 		}
 	      tallies.insert(tmp_tallies.begin(), tmp_tallies.end());
 
@@ -84,6 +87,7 @@ void print_tally(std::map<int,tally_struct> tallies, int tally_id, std::ostream 
         ostream << tally.result[i] << std::endl;
       count++;
     }
+  std::cout << count << std::endl;
   ostream << std::endl;
   ostream << std::endl;
 

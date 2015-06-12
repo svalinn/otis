@@ -163,9 +163,12 @@ int main(int argc, char* argv[])
   // get the results of the search
   std::map<int,std::vector<int> > routes = nav->get_unique_routes();
 
+  std::cout << "Found " << routes.size() << " routes" << std::endl;
+
   // prints a dot graph of network connectivity & 
   // the unique routes
-  print_routes(routes);
+  DotOutput *dot = new DotOutput(routes,new_pipes);
+  dot->print_routes();
 
   // if we want just the network
   if(no_irr)

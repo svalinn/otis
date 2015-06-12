@@ -9,8 +9,32 @@
 #include <fstream> 
 #include <string>
 
+DotOutput::DotOutput(std::map<int,std::vector<int> > routes, Network *net)
+{
+  set_routes(routes);
+  set_residence_times(net->get_residence_times());
+}
+
+DotOutput::~DotOutput()
+{
+}
+
+// set the routes
+void DotOutput::set_routes(std::map<int, std::vector<int> > flow_routes )
+{
+  // set the route data
+  routes = flow_routes;
+}
+
+// set the residence times
+void DotOutput::set_residence_times(std::map<int, double > residency_times )
+{
+  // set the route data
+  residence_times = residency_times;
+}
+
 // print each route
-void print_routes(std::map<int,std::vector<int> > routes)
+void DotOutput::print_routes()
 {
   std::map<int,std::vector<int> >::iterator it;
   std::vector<int>::iterator it_vec;
@@ -32,9 +56,17 @@ void print_routes(std::map<int,std::vector<int> > routes)
     {
       if ( std::distance(routes.begin(),it)%3 == 0 )
 	{
+	  if (std::distance(routes.begin(),it)%3 == 0 & std::distance(routes.begin(),it) > 0 )
+	    dot << "}" << std::endl;
+
 	  dot << "digraph graphname"+int_to_string(count)+"{" << std::endl;
 	  count++;
 	  color_count = 0;
+	}
+
+      for ( it_vec = it->second.begin() ; it_vec != it->second.end() ; ++it_vec) 
+	{
+	  dot << *it_vec << " [label=\"vol " << *it_vec << " Residence time " <<  std::to_string(residence_times[*it_vec]) << "\"]" << std::endl;;
 	}
 
       for ( it_vec = it->second.begin() ; it_vec != it->second.end() ; ++it_vec) 
@@ -49,7 +81,7 @@ void print_routes(std::map<int,std::vector<int> > routes)
       
       color_count++;
     }
-  
+
   dot << "}" << std::endl;
   dot.close();
 
@@ -57,7 +89,7 @@ void print_routes(std::map<int,std::vector<int> > routes)
 }
 
 // converts int_to_string
-std::string int_to_string(int integer)
+std::string DotOutput::int_to_string(int integer)
 {
   std::string result;
   std::ostringstream convert;

@@ -177,7 +177,7 @@ void AlaraOutput::write_alara_input()
       for ( vec_it = map_it->second.begin() ; vec_it != map_it->second.end() ; ++vec_it )
 	{
 	  alara_file << "flux flux_" << (*vec_it)-1 << " " << output_file << "_" << map_it->first;
-	  alara_file << " 5.0E7 " << (*vec_it)-1 << " default" << std::endl;
+	  alara_file << " 5.0E7 " << vec_it-(map_it->second).begin() << " default" << std::endl;
 	}
       alara_file << std::endl;
       alara_file << "schedule irradation" << std::endl;
@@ -200,9 +200,9 @@ void AlaraOutput::write_alara_isolib()
   isolib << "h:1   1.00782504   1 1.0 1" << std::endl;
   isolib << " 1 100" << std::endl;
   isolib << "h:2   2.01410178   1 1.0 1" << std::endl;
-  isolib << " 1 100" << std::endl;
+  isolib << " 2 100" << std::endl;
   isolib << "o:16  15.9949146   8 1.0 1" << std::endl;
-  isolib << "1 100" << std::endl;
+  isolib << " 16 100" << std::endl;
   isolib.close();      
 }
 
