@@ -5,7 +5,6 @@
 #include <fstream>
 #include <ostream>
 
-
 // constructor
 ReadCGM::ReadCGM(std::string filename, bool bidirectional)
 {
@@ -26,7 +25,6 @@ ReadCGM::ReadCGM(std::string filename, bool bidirectional)
     {
       for ( it_vec = it->second.begin() ; it_vec != it->second.end() ; ++it_vec)
 	{
-      std::cout << it->first << " " << *it_vec << std::endl;
 	  nw->AddLink(it->first,*it_vec);
 	}
     }
@@ -90,7 +88,6 @@ std::map<int,std::vector<int> > ReadCGM::build_all_nodes()
     {
       int id = irf->first;
       RefVolume* vol = irf->second;
-      //      std::cout << id << " " << vol << " " << vol->id() << std::endl;
       // get the neighbour volumes
       std::vector<int> neighbour_ids;
       std::vector<RefVolume*> neighbours = get_neighbour_volumes(vol);
@@ -228,7 +225,6 @@ int ReadCGM::get_problem_members()
 	    // volume in cubic centimetres
 	    // density 0.936 g/cc * 1000 = kg/m3
 	    //	    time = (flowrate*(volume/1.e6))/(1000*0.936);
-	    std::cout << flowrate << std::endl;
 	    time = ((volume/1.e6)*0.936*1000)/flowrate;
 	    residence_times[id] = time; // residence_times is class member
 	  }
@@ -321,7 +317,37 @@ std::vector<RefVolume*> ReadCGM::get_neighbour_volumes(RefVolume *current_vol)
 	  if(id_map.count(shared_vol->id()) == 0 )
 	    continue;
 	  else
-	    shared_vols.insert(shared_vol);
+	    {
+	      // insert the shared vol into list
+	      shared_vols.insert(shared_vol);
+	    }
+	}
+      
+      for ( int j = 0 ; j < neighbour_volumes.size() ; j++ )
+	{
+	  RefVolume* shared_vol = dynamic_cast<RefVolume*>(neighbour_volumes[j]);
+	  
+	  // make the shared vols pair for the areas
+	  std::pair<int,int> shared_vols;
+	  
+	  // dont care about shared surfaces in the same volume
+	  if ( current_vol->id() == shared_vol->id() )
+	    continue;
+
+	  RefFace* shared_face = dynamic_cast<RefFace*>(neighbour_surfaces[i]);
+ 	  shared_vols  = std::make_pair(current_vol->id(),shared_vol->id());
+
+	  if ( shared_surface_area.count(shared_vols) == 0 )
+	    shared_surface_area[shared_vols] =  shared_face->area();
+	  else
+	    shared_surface_area[shared_vols] += shared_face->area();
+
+	  shared_vols = std::make_pair(shared_vol->id(),current_vol->id());
+	  if ( shared_surface_area.count(shared_vols) == 0 )
+	    shared_surface_area[shared_vols] =  shared_face->area();
+	  else
+	    shared_surface_area[shared_vols] += shared_face->area();
+
 	}
     }
 
@@ -330,6 +356,7 @@ std::vector<RefVolume*> ReadCGM::get_neighbour_volumes(RefVolume *current_vol)
 
   // make set into vector
   std::copy(shared_vols.begin(), shared_vols.end(), std::back_inserter(shared_volumes));
+
 
   return shared_volumes;
 }
@@ -403,6 +430,13 @@ std::map<int,std::vector<int> > ReadCGM::get_problem_map()
 {
   return problem_map;
 }
+
+// return the map of boundary areas
+std::map<std::pair<int,int>, double > ReadCGM::get_surface_areas()
+{
+  return shared_surface_area;
+}
+
 
 /*
 // print each route

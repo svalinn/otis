@@ -35,7 +35,11 @@ class AlaraOutput {
   public:
     AlaraOutput(std::map<int, std::vector<int> > unique_flow_routes,
                 std::string mcnp_filename,
-                std::string filename, Network *nw);
+                std::string filename, Network *nw,
+		std::string source_strength,
+		std::string delay_time_string,
+		int num_irradiation_cyles);
+
     AlaraOutput();
    ~AlaraOutput(); // destructor
 
@@ -44,6 +48,9 @@ class AlaraOutput {
     void set_filename(std::string filename);
     void set_residence_times(std::map<int,double> residence_times);
     void set_mcnp_filename(std::string filename); 
+    void set_normalisation(std::string source_strength);
+    void set_irradiation_cycles(int num_irradation_cycles);
+    void set_delay_time(std::string delay_time_string);
   
     std::string get_filename();
     std::string get_mcnp_filename();
@@ -63,8 +70,11 @@ class AlaraOutput {
 
   private:
     // class member variables
+    int num_cycles; 
+    std::string delay_time;
     std::string output_file;
     std::string mcnp_filename;
+    std::string normalisation;
     std::map<int, double> residence_times;
     std::map<int, std::vector<int> > routes; // map of unique routes in the problem
     std::map<int, tally_struct> problem_tallies; // the tally output for the problem

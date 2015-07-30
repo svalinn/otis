@@ -34,6 +34,8 @@ class ReadCGM {
   std::map<int,std::vector<int> > get_problem_map();
   bool check_network();
   int get_problem_members();
+  // return the map of boundary areas
+  std::map<std::pair<int,int>, double > get_surface_areas();
 
   // return the residence times
   std::map<int, double> get_residence_times();
@@ -60,6 +62,9 @@ class ReadCGM {
     Network *nw;
     // map of volume ids and links
     std::map<int,std::vector<int> > problem_map;
+    // map of pairs of shared volumes
+    std::map<std::pair<int,int>, double > shared_surface_area;
+
     std::map<int,double> residence_times;
 
     /* the following variables are specific to ReadCGM */

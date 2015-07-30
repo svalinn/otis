@@ -22,7 +22,10 @@ void help()
   std::cout << "-c <string> ACIS file name" << std::endl;
   std::cout << "-m <string> MCNP file name" << std::endl;
   std::cout << "-h print thish help message" << std::endl;
-  std::cout << "-n no activation, just print the network map and exit" << std::endl;
+  std::cout << "-n set the normalisation" << std::endl;
+  std::cout << "-p set the number of pulses" << std::endl;
+  std::cout << "-d set the delay between pulses" << std::endl;
+  std::cout << "-t no activation, just print the network map and exit" << std::endl;
   return;
 }
 
@@ -33,8 +36,11 @@ int main(int argc, char* argv[])
   int start_vol,target_vol; // start and target vols
   char *mcnp_file = NULL, *cad_file = NULL; // strings for mcnp and cad file
   bool no_irr = false,help_set = false;
+  char *normalisation;
+  int num_pulses = -1;
+  char *pulse_delay;
 
-  while(( opts = getopt(argc, argv, "s:f:c:m:hn")) != -1)
+  while(( opts = getopt(argc, argv, "s:f:c:m:n:p:d:th")) != -1)
     switch (opts)
       {
         case 's':
@@ -53,6 +59,15 @@ int main(int argc, char* argv[])
 	  help_set = true;
 	  break;
         case 'n':
+	  normalisation = optarg;
+	  break;
+        case 'p':
+	  num_pulses = std::atoi(optarg);
+	  break;
+        case 'd':
+	  pulse_delay = optarg;
+	  break;
+        case 't':
           no_irr = true;
 	  break;
         case '?':
@@ -73,6 +88,12 @@ int main(int argc, char* argv[])
   if(cad_file == NULL)
     {
       std::cerr << "ERROR: Network file not named, please provide with -c option" << std::endl;
+      return -1;
+    }
+
+  if(normalisation == NULL)
+    {
+      std::cerr << "ERROR: Neutron normalisation not set" << std::endl;
       return -1;
     }
 
@@ -100,8 +121,22 @@ int main(int argc, char* argv[])
       return -1;
     }
 
+  if ( num_pulses < 0 )
+    {
+      std::cerr << "ERROR: you need to set the number of pulses" << std::endl;
+      return -1;
+    }
+
+  if ( pulse_delay == NULL )
+    {
+      std::cerr << "ERROR: you need to set the delay between pulses" << std::endl;
+      return -1;
+    }
+
   std::string filename(cad_file);    
   std::string mcnpfile(mcnp_file);
+  std::string source_strength(normalisation);
+  std::string delay_time(pulse_delay);
 
   //  Network *new_pipes = new Network();
   Network *new_pipes;
@@ -120,6 +155,7 @@ int main(int argc, char* argv[])
       new_pipes->set_problem_map(geom->get_problem_map());
       problem_map = geom->get_problem_map();
       new_pipes->set_residence_times(geom->get_residence_times());
+      new_pipes->set_surface_areas(geom->get_surface_areas());
     }
 
   if(filename.find(".dot") != std::string::npos)
@@ -162,9 +198,11 @@ int main(int argc, char* argv[])
 
   // get the results of the search
   std::map<int,std::vector<int> > routes = nav->get_unique_routes();
-
   std::cout << "Found " << routes.size() << " routes" << std::endl;
 
+  // modify the network according to the boundary areas
+  new_pipes->modify_residence_times(routes);
+  
   // prints a dot graph of network connectivity & 
   // the unique routes
   DotOutput *dot = new DotOutput(routes,new_pipes);
@@ -176,7 +214,8 @@ int main(int argc, char* argv[])
   
   // new alara output instance
   AlaraOutput *alara = new AlaraOutput(routes, mcnp_file,
-				       "fluxes", new_pipes );
+				       "fluxes", new_pipes, source_strength,
+				       delay_time,num_pulses);
   // write the flux and input
   alara->write_alara_fluxes();
   alara->write_alara_input();

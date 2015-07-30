@@ -3,12 +3,18 @@
 // constructor
 AlaraOutput::AlaraOutput(std::map<int, std::vector<int> > routes,
 			 std::string mcnp_filename,
-			 std::string filename, Network *net)
+			 std::string filename, Network *net,
+			 std::string normalisation,
+			 std::string delay_time,
+			 int num_pulses)
 {
   set_filename(filename);
   set_routes(routes);
   set_mcnp_filename(mcnp_filename);
   set_residence_times(net->get_residence_times());
+  set_normalisation(normalisation);
+  set_irradiation_cycles(num_pulses);
+  set_delay_time(delay_time);
 
   // make sure the file exists
   std::cout << mcnp_filename << std::endl;
@@ -45,6 +51,28 @@ void AlaraOutput::set_filename(std::string filename)
   // set the class output filename
   output_file = filename;
 }
+
+// set the filename
+void AlaraOutput::set_irradiation_cycles(int num_irradiation_cycles)
+{
+  // set the class output filename
+  num_cycles = num_irradiation_cycles;
+}
+
+// set the filename
+void AlaraOutput::set_delay_time(std::string delay_time_string)
+{
+  // set the class output filename
+  delay_time = delay_time_string;
+}
+
+// set the filename
+void AlaraOutput::set_normalisation(std::string source_strength)
+{
+  // set the class output filename
+  normalisation = source_strength;
+}
+
 
 // get the filename
 std::string AlaraOutput::get_filename()
@@ -135,7 +163,9 @@ void AlaraOutput::write_alara_header(std::ofstream &alara_file)
   alara_file << "mixture mix_1" << std::endl;
   alara_file << "    element h:1  1.1190E-1 1 " << std::endl;
   alara_file << "    element h:2  2.5720E-5 1 " << std::endl;
-  alara_file << "    element o:16  8.8807E-1 8 " << std::endl;
+  alara_file << "    element o:16    0.886478794488 8" << std::endl;
+  alara_file << "    element o:17    0.000359827839081 8" << std::endl;
+  alara_file << "    element o:18    0.00205137767307 8" << std::endl;
   alara_file << "end" << std::endl;
   alara_file << "" << std::endl;
 }
@@ -150,7 +180,7 @@ void AlaraOutput::write_alara_footer(std::ofstream &alara_file)
   alara_file << "    0 s" << std::endl;
   alara_file << "end" << std::endl;
   alara_file << "" << std::endl;
-  alara_file << "data_library alaralib ../alara_eaf2010/fendl3bin" << std::endl;
+  alara_file << "data_library alaralib fendl3bin" << std::endl;
   alara_file << "" << std::endl;
   alara_file << "output zone" << std::endl;
   alara_file << "       number_density" << std::endl;
@@ -176,14 +206,21 @@ void AlaraOutput::write_alara_input()
 
       for ( vec_it = map_it->second.begin() ; vec_it != map_it->second.end() ; ++vec_it )
 	{
-	  alara_file << "flux flux_" << (*vec_it)-1 << " " << output_file << "_" << map_it->first;
-	  alara_file << " 5.0E7 " << vec_it-(map_it->second).begin() << " default" << std::endl;
+	  alara_file << "flux flux_" << (*vec_it) << " " << output_file << "_" << map_it->first;
+	  alara_file << " " << normalisation << " " << vec_it-(map_it->second).begin() << " default" << std::endl;
 	}
       alara_file << std::endl;
       alara_file << "schedule irradation" << std::endl;
-      for ( vec_it = map_it->second.begin() ; vec_it != map_it->second.end() ; ++vec_it )
+      for ( int i = 0 ; i < num_cycles ; i++ )
 	{
-	  alara_file << "    " << std::to_string(residence_times[*vec_it]) << " s flux_" << (*vec_it)-1  << " steady_state 0 s" << std::endl;
+	  for ( vec_it = map_it->second.begin() ; vec_it != map_it->second.end() ; ++vec_it )
+	    {
+	      alara_file << "    " << std::to_string(residence_times[*vec_it]) << " s flux_" << (*vec_it)  << " steady_state 0 s" << std::endl;
+	    }
+
+	  // on the last cycle do not cycle the water
+	  if ( i < num_cycles-1 )
+	    alara_file << "    " << delay_time << " s flux_" << *(map_it->second.begin())  << " steady_state 0 s" << std::endl;
 	}
       alara_file << "end" << std::endl;
       write_alara_footer(alara_file);
@@ -203,6 +240,11 @@ void AlaraOutput::write_alara_isolib()
   isolib << " 2 100" << std::endl;
   isolib << "o:16  15.9949146   8 1.0 1" << std::endl;
   isolib << " 16 100" << std::endl;
+  isolib << "o:17 16.9991315 8 1.0 1" << std::endl;
+  isolib << "17 100" << std::endl;
+  isolib << "o:18 17.9991610 8 1.0 1" << std::endl;
+  isolib << "18 100" << std::endl;
+
   isolib.close();      
 }
 

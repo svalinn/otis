@@ -42,14 +42,16 @@ TEST_F(AlaraTest, ValidFile)
 // named constructor
 TEST_F(AlaraTest, ValidFilename)
 {
-  AlaraOutput *alara = new AlaraOutput(uniq_paths,mcnp_file,"alara_prob",nw);
+  AlaraOutput *alara = new AlaraOutput(uniq_paths,mcnp_file,"alara_prob",nw
+				       ,"5.0E7","0.0",1);
   EXPECT_EQ(alara->get_filename(),"alara_prob");
 }
 
 // named constructor
 TEST_F(AlaraTest, ValidMCNPFilename)
 {
-  AlaraOutput *alara = new AlaraOutput(uniq_paths,mcnp_file,"alara_prob",nw);
+  AlaraOutput *alara = new AlaraOutput(uniq_paths,mcnp_file,"alara_prob",nw,
+				       "5.0E7","0.0",1);
   EXPECT_EQ(alara->get_mcnp_filename(),mcnp_file);
 }
 
@@ -72,7 +74,8 @@ TEST_F(AlaraTest, SetMCNPFilename)
 // check instanciated data for correctness
 TEST_F(AlaraTest, ValidOutput)
 {
-  AlaraOutput *alara = new AlaraOutput(uniq_paths,mcnp_file,"alara_prob",nw);
+  AlaraOutput *alara = new AlaraOutput(uniq_paths,mcnp_file,"alara_prob",nw,
+				       "5.0E7","0.0",1);
   EXPECT_EQ(alara->check_consistency(),true);
 }
 
@@ -88,7 +91,8 @@ TEST_F(AlaraTest, InValidOutput)
   std::map<int, std::vector<int> > local_map;
   local_map[1] = paths;
 
-  AlaraOutput *alara = new AlaraOutput(local_map,mcnp_file,"alara_prob",nw);
+  AlaraOutput *alara = new AlaraOutput(local_map,mcnp_file,"alara_prob",nw
+				       ,"5.0E7","0.0",1);
   EXPECT_EQ(alara->check_consistency(),false);
 }
 
