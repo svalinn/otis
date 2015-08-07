@@ -29,3 +29,10 @@ add_test(NAME ReadDotTest.Bidirectional COMMAND read_dot_test --gtest_filter=Dot
 add_test(NAME ReadDotTest.NotBidirectional COMMAND read_dot_test --gtest_filter=DotReaderTest.NotBidirectional --dot_file=${CMAKE_CURRENT_SOURCE_DIR}/dot.dot)
 add_test(NAME ReadDotTest.CheckProblemMapsTrue COMMAND read_dot_test --gtest_filter=DotReaderTest.CheckProblemMapsTrue --dot_file=${CMAKE_CURRENT_SOURCE_DIR}/dot.dot)
 add_test(NAME ReadDotTest.CheckProblemMapsFalse COMMAND read_dot_test --gtest_filter=DotReaderTest.CheckProblemMapsFalse --dot_file=${CMAKE_CURRENT_SOURCE_DIR}/dot_bad.dot)
+
+add_test(NAME ReadDotTest.ValidFileAltFormat COMMAND read_dot_test --gtest_filter=DotReaderTest.ValidFile --dot_file=${CMAKE_CURRENT_SOURCE_DIR}/dot_alternative.dot)
+add_test(NAME ReadDotTest.InValidFileAltFormat COMMAND read_dot_test --gtest_filter=DotReaderTest.InValidFile --dot_file=${CMAKE_CURRENT_SOURCE_DIR}/dot_alternative.dot)
+add_test(NAME ReadDotTest.GetNetworkAltFormat COMMAND read_dot_test --gtest_filter=DotReaderTest.GetNetwork --dot_file=${CMAKE_CURRENT_SOURCE_DIR}/dot_alternative.dot)
+add_test(NAME ReadDotTest.BidirectionalAltFormat COMMAND read_dot_test --gtest_filter=DotReaderTest.Bidirectional --dot_file=${CMAKE_CURRENT_SOURCE_DIR}/dot_alternative.dot)
+add_test(NAME ReadDotTest.NotBidirectionalAltFormat COMMAND read_dot_test --gtest_filter=DotReaderTest.NotBidirectional --dot_file=${CMAKE_CURRENT_SOURCE_DIR}/dot_alternative.dot)
+add_test(NAME ReadDotTest.CheckProblemMapsTrueAltFormat COMMAND read_dot_test --gtest_filter=DotReaderTest.CheckProblemMapsTrue --dot_file=${CMAKE_CURRENT_SOURCE_DIR}/dot_alternative.dot)
