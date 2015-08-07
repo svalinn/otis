@@ -1,0 +1,47 @@
+##
+
+geometry rectangular
+
+volumes
+    125.0 zone_1
+end
+
+mat_loading
+    zone_1 mix_1
+end
+
+spatial_norm
+    1
+end
+
+material_lib matlib
+element_lib new_isolib
+
+mixture mix_1
+    material co 1 1 
+end
+
+flux flux_1 new_flux 5.0E7 0 default
+
+schedule irradation
+    40.000000 s flux_1 steady_state 0 s
+    3.000000 s flux_1 steady_state 0 s
+    10.100000 s flux_1 steady_state 0 s
+    1.000000 s flux_1 steady_state 0 s
+end
+pulsehistory steady_state
+    0 s
+end
+
+cooling
+    0 s
+end
+
+data_library alaralib ../alara_eaf2010/fendl3bin
+
+output zone
+       number_density
+end
+
+truncation 1e-15
+impurity 1e-30 1e-25

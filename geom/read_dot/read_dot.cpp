@@ -5,7 +5,7 @@
 DotReader::DotReader(std::string filename, bool bidirectional)
 {
   // read a dotfile and populate the class with
-  // a network of nodes and connections    
+  // a network of nodes and connections
   nw = new Network();
 
   // if we want a two way network
@@ -16,7 +16,7 @@ DotReader::DotReader(std::string filename, bool bidirectional)
 
   // read the dot file
   read_dot_file(filename);
- 
+
   // check the network
   if(!check_network())
     std::cout << "Network Connection Problems" << std::endl;
@@ -92,11 +92,11 @@ void DotReader::read_dot_file(std::string filename)
   while ( std::getline (dotfile,line) )
     {
       if(line.find("//") != std::string::npos)
-	continue;
+      	continue;
       if(line.find("->") != std::string::npos)
-	process_link(line);
+      	process_link(line);
       if(line.find("label") != std::string::npos)
-	process_node(line);
+      	process_node(line);
     }
 
   // build problem map from network
@@ -124,12 +124,12 @@ void DotReader::process_node(std::string line)
   std::vector<std::string> tokens = tokenise(line,'"');
   std::vector<std::string> values = tokenise(tokens[1],' ');
 
-  // need to check that 
+  // need to check that
   // values[0] = vol
   // values[1] = id number
   // values[2] = residence time
   // values[3] = seconds
-  residence_times[std::stoi(values[1])] = std::stof(values[2]);
+  residence_times[std::stoi(values[1])] = std::stof(values[4]);
 }
 
 // process the string and extract the link data
@@ -141,15 +141,15 @@ void DotReader::process_link(std::string line)
   // find the "->" token, then take the elements adjacent
   for( int i = 0 ; i < tokens.size() ; i++ )
     {
-      if (tokens[i].find("->") != std::string::npos) 
-	{
-	  int link1 = std::stoi(tokens[i-1]);
-	  int link2 = std::stoi(tokens[i+1]);
-	  nw->AddLink(link1,link2);
-	  members.insert(link1);
-	  members.insert(link2);
-	  break;
-	}
+      if (tokens[i].find("->") != std::string::npos)
+    	{
+	      int link1 = std::stoi(tokens[i-1]);
+	      int link2 = std::stoi(tokens[i+1]);
+	      nw->AddLink(link1,link2);
+	      members.insert(link1);
+	      members.insert(link2);
+//	      break;
+     	}
     }
 }
 
@@ -160,7 +160,7 @@ std::vector<std::string> DotReader::tokenise(std::string line, char delimiter)
   std::vector<std::string> tokens;
   std::string s;
 
-  while (std::getline(ss, s, delimiter)) 
+  while (std::getline(ss, s, delimiter))
     tokens.push_back(s);
   return tokens;
 }

@@ -7,3 +7,4 @@ add_definitions(-std=c++11)
 # add the output mechanisms
 add_subdirectory(dot)
 add_subdirectory(alara)
+add_subdirectory(mcnp_sdef)

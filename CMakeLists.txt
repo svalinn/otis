@@ -2,7 +2,7 @@
 cmake_minimum_required(VERSION 2.8.4)
 
 # need c++11
-#list( APPEND CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11") 
+#list( APPEND CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 add_definitions(-std=c++11)
 
 # project
@@ -20,12 +20,14 @@ add_subdirectory(geom)
 add_subdirectory(navigator)
 add_subdirectory(output)
 
-add_executable( otis main.cpp )
+add_executable( otis otis.cpp )
+add_executable( raster raster.cpp )
 
 # target include dirs
 include_directories(otis PUBLIC read_tally alara navigator read_cgm read_dot ${CMAKE_CURRENT_SOURCE_DIR})
+include_directories(raster PUBLIC navigator read_dot ${CMAKE_CURRENT_SOURCE_DIR})
 
-# needs iGeom 
+# needs iGeom
 set(igeom_include_dirs ${CGM_DIR}/include)
 set(igeom_lib_dirs ${CGM_DIR}/lib)
 
@@ -35,16 +37,14 @@ set(cubit_lib_dirs ${CUBIT_DIR}/bin )
 # cgm libs
 set(igeom_libs ${igeom_lib_dirs}/libiGeom.so ${igeom_lib_dirs}/libcgm.so)
 IF(${CUBIT_VERSION} GREATER 12)
-  set(cubit_libs ${cubit_lib_dirs}/libcubiti19.so ${cubit_lib_dirs}/libcubit_geom.so ${cubit_lib_dirs}/libcubit_util.so) 
+  set(cubit_libs ${cubit_lib_dirs}/libcubiti19.so ${cubit_lib_dirs}/libcubit_geom.so ${cubit_lib_dirs}/libcubit_util.so)
 ELSE(${CUBIT_VERSION} GREATER 12)
-  set(cubit_libs ${cubit_lib_dirs}/libcubiti19.so) 
+  set(cubit_libs ${cubit_lib_dirs}/libcubiti19.so)
 ENDIF(${CUBIT_VERSION} GREATER 12 )
 
 #libs
 target_link_libraries(otis read_tally read_dot read_cgm navigator dot_output alara ${igeom_libs} ${cubit_libs})
+target_link_libraries(raster read_dot navigator mcnp_sdef ${igeom_libs} ${cubit_libs})
 
 # install the executable
-INSTALL( TARGETS otis RUNTIME DESTINATION bin )
-#install(program otis destination bin)
-
-
+INSTALL( TARGETS otis raster RUNTIME DESTINATION bin )
